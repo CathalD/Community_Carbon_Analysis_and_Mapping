@@ -1,0 +1,2 @@
+"validation","n_training","n_holdout","rmse_kg_m2","mae_kg_m2","r_squared","applicability"
+"Spatial holdout of SIMULATED observations",112,48,1.42534252754475,1.18242370283213,0.353888125756936,"Simulation performance only; does not validate real community stocks"

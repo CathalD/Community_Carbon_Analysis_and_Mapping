@@ -1,0 +1,78 @@
+"dataset","variable","interval","datum","unit","n_profile_records","recorded_coordinate_pairs"
+"Janousek","bd","0-5","surface","g/cm3",1240,1030
+"Janousek","bd","15-30","surface","g/cm3",1235,1028
+"Janousek","bd","30-60","surface","g/cm3",638,548
+"Janousek","bd","5-15","surface","g/cm3",1239,1031
+"Janousek","bd","60-100","surface","g/cm3",613,529
+"Janousek","soc_gkg","0-5","surface","g C/kg",1240,1030
+"Janousek","soc_gkg","15-30","surface","g C/kg",1235,1028
+"Janousek","soc_gkg","30-60","surface","g C/kg",638,548
+"Janousek","soc_gkg","5-15","surface","g C/kg",1239,1031
+"Janousek","soc_gkg","60-100","surface","g C/kg",612,528
+"Janousek","stock_kgm2","0-100","surface","kg C/m2",611,527
+"Janousek","stock_kgm2","0-30","surface","kg C/m2",1230,1025
+"NPDB","bd","0-5","mineral","g/cm3",694,689
+"NPDB","bd","0-5","surface","g/cm3",539,536
+"NPDB","bd","15-30","mineral","g/cm3",583,579
+"NPDB","bd","15-30","surface","g/cm3",576,571
+"NPDB","bd","30-60","mineral","g/cm3",457,454
+"NPDB","bd","30-60","surface","g/cm3",462,459
+"NPDB","bd","5-15","mineral","g/cm3",692,687
+"NPDB","bd","5-15","surface","g/cm3",614,609
+"NPDB","bd","60-100","mineral","g/cm3",341,340
+"NPDB","bd","60-100","surface","g/cm3",342,341
+"NPDB","soc_gkg","0-5","mineral","g C/kg",6452,6384
+"NPDB","soc_gkg","0-5","surface","g C/kg",5650,5598
+"NPDB","soc_gkg","15-30","mineral","g C/kg",5465,5412
+"NPDB","soc_gkg","15-30","surface","g C/kg",5585,5533
+"NPDB","soc_gkg","30-60","mineral","g C/kg",3734,3690
+"NPDB","soc_gkg","30-60","surface","g C/kg",3882,3838
+"NPDB","soc_gkg","5-15","mineral","g C/kg",6316,6251
+"NPDB","soc_gkg","5-15","surface","g C/kg",6024,5967
+"NPDB","soc_gkg","60-100","mineral","g C/kg",2577,2546
+"NPDB","soc_gkg","60-100","surface","g C/kg",2601,2570
+"NPDB","stock_kgm2","0-100","mineral","kg C/m2",160,159
+"NPDB","stock_kgm2","0-100","surface","kg C/m2",126,125
+"NPDB","stock_kgm2","0-30","mineral","kg C/m2",420,417
+"NPDB","stock_kgm2","0-30","surface","kg C/m2",338,335
+"NRCan peat","bd","0-5","surface","g/cm3",1213,857
+"NRCan peat","bd","15-30","surface","g/cm3",1211,857
+"NRCan peat","bd","30-60","surface","g/cm3",1178,841
+"NRCan peat","bd","5-15","surface","g/cm3",1213,857
+"NRCan peat","bd","60-100","surface","g/cm3",1066,786
+"NRCan peat","soc_gkg","0-5","surface","g C/kg",1213,857
+"NRCan peat","soc_gkg","15-30","surface","g C/kg",1211,857
+"NRCan peat","soc_gkg","30-60","surface","g C/kg",1177,840
+"NRCan peat","soc_gkg","5-15","surface","g C/kg",1213,857
+"NRCan peat","soc_gkg","60-100","surface","g C/kg",1066,786
+"NRCan peat","stock_kgm2","0-100","surface","kg C/m2",1065,786
+"NRCan peat","stock_kgm2","0-30","surface","kg C/m2",1211,857
+"Riley","soc_gkg","0-5","surface","g C/kg",279,108
+"Riley","soc_gkg","15-30","surface","g C/kg",267,104
+"Riley","soc_gkg","30-60","surface","g C/kg",272,107
+"Riley","soc_gkg","5-15","surface","g C/kg",265,104
+"Riley","soc_gkg","60-100","surface","g C/kg",270,107
+"WoSIS","bd","0-5","mineral","g/cm3",22,21
+"WoSIS","bd","0-5","surface","g/cm3",21,20
+"WoSIS","bd","15-30","mineral","g/cm3",21,20
+"WoSIS","bd","15-30","surface","g/cm3",21,20
+"WoSIS","bd","30-60","mineral","g/cm3",21,21
+"WoSIS","bd","30-60","surface","g/cm3",21,21
+"WoSIS","bd","5-15","mineral","g/cm3",21,20
+"WoSIS","bd","5-15","surface","g/cm3",21,20
+"WoSIS","bd","60-100","mineral","g/cm3",9,9
+"WoSIS","bd","60-100","surface","g/cm3",9,9
+"WoSIS","soc_gkg","0-5","mineral","g C/kg",8675,6390
+"WoSIS","soc_gkg","0-5","surface","g C/kg",7975,5744
+"WoSIS","soc_gkg","15-30","mineral","g C/kg",7500,5408
+"WoSIS","soc_gkg","15-30","surface","g C/kg",7598,5471
+"WoSIS","soc_gkg","30-60","mineral","g C/kg",5945,4167
+"WoSIS","soc_gkg","30-60","surface","g C/kg",6129,4305
+"WoSIS","soc_gkg","5-15","mineral","g C/kg",8361,6130
+"WoSIS","soc_gkg","5-15","surface","g C/kg",8112,5877
+"WoSIS","soc_gkg","60-100","mineral","g C/kg",4653,3224
+"WoSIS","soc_gkg","60-100","surface","g C/kg",4726,3268
+"WoSIS","stock_kgm2","0-100","mineral","kg C/m2",4,4
+"WoSIS","stock_kgm2","0-100","surface","kg C/m2",4,4
+"WoSIS","stock_kgm2","0-30","mineral","kg C/m2",15,15
+"WoSIS","stock_kgm2","0-30","surface","kg C/m2",14,14

@@ -1,0 +1,5 @@
+"method","formula","packages","assumptions"
+"IDW","stock(s) = sum(d_i^-2 * stock_i)/sum(d_i^-2); exact input value when d_i = 0","base R; sf::st_distance; terra; ggplot2","Four illustrative core stocks; distance power 2; no variogram or kriging uncertainty. Common 0–30 cm depth."
+"Distance to nearest core","distance(s) = min_i d(s, core_i)","base R; sf::st_distance; terra; ggplot2","Proximity only; not a variance, confidence interval or map accuracy estimate."
+"Synthetic two-predictor regression","stats::lm(simulated_stock_kg_m2 ~ simulated_wetness + simulated_elevation_m)","stats::lm; terra; ggplot2","Separate simulated predictors and responses; their mean uses the four-core mean. These are not additional ground data. Final model refit to all simulation records after evaluation."
+"Spatial holdout","RMSE = sqrt(mean((simulated-predicted)^2)); MAE = mean(abs(simulated-predicted))","stats::predict; base R; ggplot2","Eastern approximately 30% held out by location. Simulation performance only; not independent validation of field data or map accuracy."

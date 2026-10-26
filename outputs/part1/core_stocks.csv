@@ -1,0 +1,5 @@
+"core_id","plot_id","ecosystem","group","latitude","longitude","sampled_depth_cm","n_sections","complete_sampled_profile","stock_0_30_kg_m2","stock_0_100_kg_m2","sampled_stock_kg_m2","complete_to_100cm","stock_0_30_t_ha","data_origin"
+"SIM-FOR-01","SIM-P03","Upland conifer forest","Forest cores",52.599681654586,-84.459058426525,45,5,TRUE,14.817714,,28.317714,FALSE,148.17714,"Revised illustrative data"
+"SIM-FOR-02","SIM-P04","Upland mixed forest","Forest cores",52.60606564506,-84.355755235849,60,6,TRUE,35.198361,,61.448361,FALSE,351.98361,"Revised illustrative data"
+"SIM-WET-01","SIM-P01","Bog","Wetland cores",52.65267617646,-84.476982453935,220,10,TRUE,10.43786,41.861735,128.906145,TRUE,104.3786,"Revised illustrative data"
+"SIM-WET-02","SIM-P02","Fen","Wetland cores",52.665369635798,-84.367655294284,160,8,TRUE,12.69744,53.52399,96.50994,TRUE,126.9744,"Revised illustrative data"

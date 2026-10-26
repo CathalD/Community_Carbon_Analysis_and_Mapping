@@ -1,0 +1,8 @@
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+outputs/R_session.txt
+outputs/**/R_session.txt
+*.zip
+data/private/
