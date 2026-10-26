@@ -263,7 +263,7 @@ spatial_results$metrics
 
 **Analyse:** Combine a prior estimate and a new estimate, giving more weight to the estimate with less uncertainty. Base R implements the normal–normal update:
 
-`Vpost = (1/Vprior + 1/Vnew)^−1`
+`Vpost = 1 / (1/Vprior + 1/Vnew)`
 
 `Meanpost = Vpost × (Meanprior/Vprior + Meannew/Vnew)`
 
