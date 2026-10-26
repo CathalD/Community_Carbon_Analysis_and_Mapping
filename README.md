@@ -3,7 +3,7 @@
 
 Use soil measurements to calculate carbon stocks, compare them with other datasets, map an area, and try a simple Bayesian update.
 
-[Follow the workshop](docs/workshop.md) · [Explainer Google Doc](https://docs.google.com/document/d/1qflFw6CH69feNRr87Oi1SbHl0sY5bcXb-TuFI6KUtaU/edit) · [Download ZIP](https://github.com/CathalD/Community_Carbon_Analysis_and_Mapping/archive/refs/heads/workshop-mvp.zip)
+[Follow the workshop](docs/workshop.md) · [See the input/output chain](docs/data-flow.md) · [Explainer Google Doc](https://docs.google.com/document/d/1qflFw6CH69feNRr87Oi1SbHl0sY5bcXb-TuFI6KUtaU/edit) · [Download ZIP](https://github.com/CathalD/Community_Carbon_Analysis_and_Mapping/archive/refs/heads/workshop-mvp.zip)
 
 ![Carbon measured down the example cores](outputs/part1/depth_profiles.png)
 
@@ -27,7 +27,7 @@ source("00_setup.R")
 source("run_all.R")
 ```
 
-Setup installs `readxl`, `ggplot2`, `sf` and `terra`. Installing `sf` or `terra` may require system libraries on some computers. Figures and tables are saved in `outputs/`; each workshop step also has copyable R code.
+Setup installs `readxl`, `ggplot2`, `sf` and `terra`. Installing `sf` or `terra` may require system libraries on some computers. Figures and tables are saved in `outputs/`. Copyable code directly below each workshop figure creates or inspects its outputs and opens the exact image. Run the earlier steps first; the [input/output chain](docs/data-flow.md) shows the dependencies. `view_figure()` opens a saved image in your browser or image viewer; it does not refresh the analysis. The full course saves outputs without opening every image.
 
 This review download uses the `workshop-mvp` branch. After it is merged, the default-branch shortcut will be:
 
