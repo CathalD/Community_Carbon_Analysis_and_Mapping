@@ -33,7 +33,7 @@ z$x_m[1] <- z$x_m[1]+100
 write.csv(z,path,row.names=FALSE)
 stopifnot(inherits(try(.read_cell_table(path,r$maps$cells,"ecosystem"),silent=TRUE),"try-error"))
 settings$field_path <- file.path(inputs,"missing.csv")
-stopifnot(inherits(try(run_local_workshop(settings),silent=TRUE),"try-error"),
+stopifnot(inherits(try(run_course(settings$field_path,settings$aoi_path,output_dir=out),silent=TRUE),"try-error"),
  !file.exists(file.path(out,"local_bayesian.csv")),!file.exists(file.path(out,"maps/idw_stock_map.png")),
  !file.exists(file.path(out,"part1/comparison/stock_by_dataset.png")))
 unlink(out,recursive=TRUE);unlink(inputs,recursive=TRUE)

@@ -13,6 +13,14 @@ run_course <- function(workbook_path, aoi_path, output_dir = "outputs/my_data",
       "cumulative_stock.png", "common_depth_stock.png")),
     file.path(output_dir, "maps", c("location_map.png", "sample_map.png", "idw_stock_map.png",
       "idw_stock_0_30.tif", "grid_values.csv", "mapping_metadata.csv", "excluded_cores.csv")))
+  # The short route may share its output directory with the optional local route.
+  # Invalidate those downstream products too, including after a failed field import.
+  source("R/pipeline.R", local=TRUE)
+  generated <- c(generated,
+    file.path(output_dir, "part1/comparison", basename(.stage_files$comparison)),
+    file.path(output_dir, c("local_grid_template.csv", "local_grid.gpkg", "local_stage_status.csv",
+      "local_area_totals.csv", "local_group_map.png", "local_model_map.png", "local_holdout.csv",
+      "local_model_metrics.csv", "local_model_coefficients.csv", "local_bayesian.csv", "local_bayesian_map.png")))
   input_paths <- normalizePath(c(workbook_path, aoi_path), mustWork = FALSE)
   if (any(normalizePath(generated, mustWork = FALSE) %in% input_paths)) {
     stop("Keep input files outside the generated output paths. Use data/input/ and data/aoi/.")
