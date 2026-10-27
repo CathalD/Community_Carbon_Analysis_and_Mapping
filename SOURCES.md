@@ -4,7 +4,7 @@
 
 `run_example.R` imports the supplied workbook and recalculates its layer and core values. The simple `field_data_template.csv` contains the same 29 slices with the confirmed example density correction already applied. `run_my_data.R` reads a user's eight-column CSV (or first-sheet Excel table) and polygon boundary; the example correction is disabled for that route. Both preserve the input file and save derived CSVs separately. Spreadsheet macros are not required or executed.
 
-The optional full course uses the workbook named in `config.R`. `course_config$data_origin` records how those observations should be described. Revised illustrative measurements and conceptual locations are examples; they do not establish actual ecosystem conditions at those coordinates.
+The complete workshop uses the workbook named in `config.R`. `course_config$data_origin` records how those observations should be described. Revised illustrative measurements and conceptual locations are examples; they do not establish actual ecosystem conditions at those coordinates.
 
 Community stocks use dry bulk density in g/cm³, organic carbon entered as a percentage, and interval thickness in cm:
 

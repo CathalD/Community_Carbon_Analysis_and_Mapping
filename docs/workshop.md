@@ -1,149 +1,33 @@
 # Community Carbon Stock Analysis and Mapping
 
-**Start here: [download, run the example, then add your own field sheet and boundary](start_here.md).** This page shows the five figures made by the main route, with runnable code below each image. It follows the [explainer Google Doc](https://docs.google.com/document/d/1qflFw6CH69feNRr87Oi1SbHl0sY5bcXb-TuFI6KUtaU/edit).
+This workshop follows soil carbon data from field and laboratory measurements to comparisons, spatial estimates and an updated carbon map. It uses four illustrative cores within a 350 km² area in western James Bay. The field values, ecosystem areas, landscape predictors and prior map are teaching examples; their assumptions are identified at each stage.
 
-Run code in the Console of the downloaded R project. `source()` runs a saved script. The supplied example is illustrative; it does not describe measured carbon across a real community.
+By the end of the workshop, you will be able to calculate and compare soil carbon stocks, explain how different mapping methods use the data, and interpret the assumptions and uncertainty in a Bayesian update.
 
-## 1 Field sheet to carbon stocks
+## Workshop preparation
 
-**Input:** [Example workbook](../data/input/community_cores.xlsm). For your own analysis, use the [eight-column field sheet](../data/input/field_data_template.csv) and [file instructions](start_here.md#3-put-your-measurements-in-the-field-sheet).
+Follow the [starter guide](start_here.md) to download the course and open `Community_Carbon_Analysis_and_Mapping.Rproj` in RStudio. Run code in the Console. `source()` runs the code in a saved R script.
 
-**Run:** `source("run_example.R")` makes all five figures below. Setup runs automatically. Figures are saved to files; they do not all open automatically.
-
-**Calculate:** Carbon stock is the amount of carbon below a square metre of ground. For each slice:
-
-`Stock (kg C/m²) = 0.1 × dry bulk density (g/cm³) × organic carbon (%) × thickness (cm)`
-
-Enter `45` for 45% carbon. Add the slice stocks to get a core total. Multiply kg C/m² by 10 for t C/ha. The code uses base R for the calculation, `readxl` for the workbook and `ggplot2` for figures.
-
-### Compare equal depths
-
-![Example carbon stock from 0 to 30 cm](../outputs/example/part1/common_depth_stock.png)
-
-[Your figure caption]
-
-```r
-source("run_example.R")
-source("R/view.R")
-view_figure("outputs/example/part1/common_depth_stock.png")
-```
-
-**Read:** Compare stocks over the same 0–30 cm depth. A missing value means the core does not cover that full depth; it does not mean zero carbon.
-
-**Use:** Compare cores and decide which differences need more sampling. Values and group summaries are saved in `outputs/example/part1/core_stocks.csv` and `descriptive_statistics.csv`. Check `qc_flags.csv` first.
-
-### Read changes down a core
-
-![Example bulk density and organic carbon with depth](../outputs/example/part1/depth_profiles.png)
-
-[Your figure caption]
-
-```r
-source("run_example.R")
-source("R/view.R")
-view_figure("outputs/example/part1/depth_profiles.png")
-```
-
-**Read:** Points represent sampled slices. Depth increases downward. Density and carbon concentration both affect stock.
-
-**Use:** Find changes down the core. The slice calculations are in `outputs/example/part1/layer_stocks.csv`.
-
-### Add carbon with depth
-
-![Example cumulative stock with depth](../outputs/example/part1/cumulative_stock.png)
-
-[Your figure caption]
-
-```r
-source("run_example.R")
-source("R/view.R")
-view_figure("outputs/example/part1/cumulative_stock.png")
-```
-
-**Read:** The curve adds the carbon in successive slices and stops at the sampled bottom.
-
-**Use:** See how much carbon lies above a chosen depth. Compare equal depths when cores have different lengths.
-
-## 2 Core stocks to a map
-
-**Input:** The checked 0–30 cm core stocks, their coordinates and [the example boundary](../data/aoi/study_area.geojson). No extra carbon measurements are added at this step.
-
-### Check the sample locations
-
-![Example boundary and sample locations](../outputs/example/maps/sample_map.png)
-
-[Your figure caption]
-
-```r
-source("run_example.R")
-source("R/view.R")
-view_figure("outputs/example/maps/sample_map.png")
-```
-
-**Read:** Check that the points fall inside the intended area. **AOI** means **area of interest**: your study boundary.
-
-**Use:** Catch coordinate or boundary mistakes before reading the coloured map. `sf` handles boundaries and distances.
-
-### Estimate between samples
-
-![Example distance-weighted carbon stock map](../outputs/example/maps/idw_stock_map.png)
-
-[Your figure caption]
-
-```r
-source("run_example.R")
-source("R/view.R")
-view_figure("outputs/example/maps/idw_stock_map.png")
-```
-
-**Read:** Colours estimate 0–30 cm carbon stock between samples. Nearby samples have more influence. This is **inverse-distance weighting (IDW)**, calculated in base R using distances from `sf`; `terra` saves the map as a GeoTIFF.
-
-**Use:** Explore patterns and places that need more measurements. Shading is an estimate, not a measurement at every location. A smooth map does not show how accurate it is.
-
-The map and its settings are saved in `outputs/example/maps/`. `mapping_metadata.csv` records settings; `excluded_cores.csv` lists samples left out of mapping and why.
-
-## 3 Repeat with your own data
-
-Follow [the file-by-file instructions](start_here.md#3-put-your-measurements-in-the-field-sheet):
-
-| Put this file here | It supplies |
-| --- | --- |
-| `data/input/my_field_data.csv` | Your slice measurements and core coordinates. |
-| `data/aoi/my_aoi.geojson` | A polygon containing your sample locations. |
-
-```r
-source("run_my_data.R")
-source("R/view.R")
-view_figure("outputs/my_data/maps/idw_stock_map.png")
-```
-
-This makes the same five figures in `outputs/my_data/`. Replace both the measurements and boundary when changing study areas. Changing an AOI alone does not move the example cores. At least two different locations with complete 0–30 cm stocks are needed for the IDW map.
-
-To copy the analysis call instead of using the saved wrapper:
-
-```r
-source("00_setup.R")
-source("R/course.R")
-run_course(
-  workbook_path = "data/input/my_field_data.csv",
-  aoi_path = "data/aoi/my_aoi.geojson"
-)
-```
-
-After any input change, run the analysis again to refresh figures. See [how the files connect](data-flow.md).
-
-## Optional full illustrative course
-
-The five figures above complete the main route. The extensions below introduce reference comparisons, ecosystem totals, landscape modelling and Bayesian updating. They retain the original section order for the explainer.
-
-These examples use the supplied workbook and boundary through `config.R`. They save to `outputs/part1/`, `outputs/part2/` and `outputs/part3/`; they do not use or overwrite `outputs/my_data/`. The zones, extra landscape observations and prior map are invented teaching inputs.
+To run the complete workshop and reproduce every figure:
 
 ```r
 source("run_all.R")
 ```
 
-<details>
-<summary>Open the optional full course: explanations, figures and code</summary>
+This checks the required packages and runs the analysis in order. Alternatively, run `source("00_setup.R")` once, then use the code beneath each figure as you work through the sections. The script names, input files and output files are the same in both approaches. A figure opens when you run its `view_figure()` line; the analysis also saves the image for later use.
+
+| Stage | Analysis | Main output | Next use |
+| --- | --- | --- | --- |
+| Part 1, Steps 1–2 | Check measurements; calculate slice and core stocks; summarise variation | `outputs/part1/` | Ground-data comparisons and spatial analysis |
+| Part 1, Step 3 | Compare datasets, ecosystems, regions and studies | `outputs/part1/comparison/` | Interpret the community values in context |
+| Part 2A | Apply group mean stocks to ecosystem areas | `outputs/part2/area/` | Supply the common area and grid for mapping |
+| Part 2B | Estimate between cores using distance | `outputs/part2/spatial/` | Supply the new estimate for Part 3 |
+| Part 2C | Fit and test a model using landscape information | `outputs/part2/spatial/` | Compare a separate modelling approach |
+| Part 3 | Combine a prior map and a new estimate | `outputs/part3/` | Interpret the updated stock and uncertainty |
+
+Each section identifies the **input**, **analysis**, **interpretation** and **application**. Read the figures alongside the saved tables and quality-control flags. Keep the same stock units and depth window when comparing methods. The [file-flow guide](data-flow.md) shows the dependencies in more detail.
+
+The [explainer Google Doc](https://docs.google.com/document/d/1qflFw6CH69feNRr87Oi1SbHl0sY5bcXb-TuFI6KUtaU/edit) follows the same analysis sequence. Figure captions and the Fort Severn case-study text are left for the author to complete.
 
 ## Part 1 Field based analysis
 
@@ -151,13 +35,13 @@ source("run_all.R")
 
 **Input:** [Workbook](../data/input/community_cores.xlsm): `3. Peat Data`, `2. Core Log`, and `1. Plot & Site Log`.
 
-**Output:** Checked `core_input` in R, including QC. **Used next:** Step 2 recalculates stocks from the same workbook.
+**Output:** Checked `core_input` in R, including quality-control (QC) flags. **Used next:** Step 2 recalculates stocks from the same workbook.
 
-**Analyse:** Bring each core's depth intervals, dry bulk density and organic carbon into [one workbook](../data/input/community_cores.xlsm). `readxl` reads the inputs; macros are not needed.
+**Analysis:** Compile one row per sampled soil slice, with its core ID, upper and lower depths, dry bulk density and organic carbon concentration. Dry bulk density is the dry mass of soil per unit volume. Include the ecosystem and core coordinates. `readxl` imports the [example workbook](../data/input/community_cores.xlsm); macros are not needed.
 
-**Read:** Check IDs, units and depth coverage. The code below shows QC in memory; Step 2 saves [qc_flags.csv](../outputs/part1/qc_flags.csv). The confirmed J7 density correction, 0.9 → 0.09 g/cm³, is applied during import; the source workbook stays unchanged.
+**Interpretation:** Check IDs, units and depth coverage. Depth is measured downward from the ground surface, including the organic surface layer. The code below shows QC in memory; Step 2 saves [qc_flags.csv](../outputs/part1/qc_flags.csv). The confirmed J7 density correction, 0.9 → 0.09 g/cm³, is applied during import; the source workbook stays unchanged.
 
-**Apply:** Correct data-entry issues before using the results. For your own field sheet and boundary, follow the main route above.
+**Application:** Review each flag against the field and laboratory records before using the results. Keep the original workbook unchanged and document any accepted correction. Instructions for preparing your own table are in the [starter guide](start_here.md).
 
 <details>
 <summary>Copy R code</summary>
@@ -198,15 +82,15 @@ view_figure("outputs/part1/common_depth_stock.png")
 
 </details>
 
-**Analyse:** Calculate carbon in each slice, then add slices over a shared depth:
+**Analysis:** Calculate the carbon stock in each slice, then add the slices within a defined depth window. Stock is the mass of carbon beneath a unit area of ground:
 
 `Stock (kg C/m²) = 0.1 × bulk density (g/cm³) × organic C (%) × thickness (cm)`
 
-Enter 45% as `45`. Multiply kg C/m² by 10 for t C/ha.
+Enter 45% as `45`, rather than `0.45`. For example, a 10 cm slice with a dry bulk density of 0.10 g/cm³ and 45% organic carbon contains `0.1 × 0.10 × 45 × 10 = 4.5 kg C/m²`. Multiply kg C/m² by 10 to convert to tonnes of carbon per hectare (t C/ha). Base R performs these calculations.
 
-**Read:** The revised 0–30 cm stocks are 14.82 and 35.20 kg C/m² for the forest cores, and 10.44 and 12.70 for the wetland cores. Deeper sampled totals cover different depths. Forest 0–100 cm values remain missing.
+**Interpretation:** Compare the 0–30 cm window, which is complete for all four cores. The revised 0–30 cm stocks are 14.82 and 35.20 kg C/m² for the forest cores, and 10.44 and 12.70 for the wetland cores. Deeper sampled totals cover different depths. Forest 0–100 cm values remain missing.
 
-**Apply:** Compare equal depths. Missing soil below a core is not zero carbon.
+**Application:** Compare equal depths. Missing soil below a core is not zero carbon.
 
 [Stock calculations and figure code](../R/field.R)
 
@@ -248,11 +132,11 @@ view_figure("outputs/part1/cumulative_stock.png")
 
 </details>
 
-**Analyse:** Plot carbon concentration, density and cumulative stock using `ggplot2`.
+**Analysis:** Plot carbon concentration, density and cumulative stock using `ggplot2`.
 
-**Read:** Each profile point represents a sampled slice; depth increases downward. Greater concentration alone does not guarantee greater stock: density and slice thickness matter too. The cumulative curve stops at sampled depth.
+**Interpretation:** Each profile point represents a sampled slice, placed at its midpoint; lines connect the slices in depth order. Depth increases downward. Greater concentration alone does not guarantee greater stock: density and slice thickness matter too. The cumulative curve stops at sampled depth.
 
-**Apply:** Identify changes down the profile and choose a consistent reporting depth.
+**Application:** Identify changes down the profile and choose a consistent reporting depth.
 
 [Profile and cumulative-curve methods](../R/field.R)
 
@@ -261,6 +145,8 @@ view_figure("outputs/part1/cumulative_stock.png")
 **Input:** Step 2's [core stocks](../outputs/part1/core_stocks.csv) and [layer stocks](../outputs/part1/layer_stocks.csv), plus [reference summaries](../data/reference/).
 
 **Output:** Comparison figures and [community-to-reference table](../outputs/part1/comparison/community_vs_reference_groups.csv). **Used next:** These comparisons provide context; Part 2A returns to Step 2's core stocks.
+
+#### Comparison by collection
 
 ![Comparison by collection](../outputs/part1/comparison/stock_by_dataset.png)
 
@@ -278,6 +164,8 @@ view_figure("outputs/part1/comparison/stock_by_dataset.png")
 
 </details>
 
+#### Comparison by ecosystem
+
 ![Comparison by ecosystem](../outputs/part1/comparison/stock_by_ecosystem.png)
 
 [Your figure caption]
@@ -294,16 +182,15 @@ view_figure("outputs/part1/comparison/stock_by_ecosystem.png")
 
 </details>
 
-**Analyse:** Compare with precomputed summaries from NRCan peat, WoSIS, NPDB, Janousek and Riley. Match quantity, units, depth and depth reference.
+**Analysis:** Compare the core results with precomputed summaries from five reference collections: NRCan peat, WoSIS, NPDB, Janousek and Riley. The figures group records by dataset, ecosystem, general region, study and source region. Stock figures use 0–30 cm; concentration and density figures use 0–5 cm. The code matches quantity, units, depth window and depth reference before comparing values. `R/compare.R` prepares the comparisons in base R and draws them with `ggplot2`.
 
-**Read:** Thick segments show the middle half of reference values; dots show medians, diamonds show means, and dashed lines show your cores. Some ecosystem and study labels are unavailable. Riley contributes concentration only.
+**Interpretation:** Thick segments show the middle 50% of reference values, from the 25th to the 75th percentile. Dots show medians, diamonds show means, and dashed lines show the community cores. A median is the middle value after ordering the records; a mean is their arithmetic average. Some ecosystem and study labels are unavailable. Riley contributes concentration only.
 
-**Apply:** Put your results in context and choose relevant reference groups. These descriptive comparisons do not establish why groups differ or validate an illustrative core.
+**Application:** Identify which studies, ecosystems and regions provide the most relevant comparison. Ask whether a difference could reflect sampling depth, ecosystem, location or measurement method. These descriptive comparisons provide context; they do not establish the cause of a difference or validate an illustrative core.
 
 [Comparison methods](../R/compare.R) · [Provenance and source limits](../SOURCES.md)
 
-<details>
-<summary>More comparison figures</summary>
+#### Comparison by general region
 
 ![Comparison by general region](../outputs/part1/comparison/stock_by_region.png)
 
@@ -321,6 +208,8 @@ view_figure("outputs/part1/comparison/stock_by_region.png")
 
 </details>
 
+#### Comparison by study
+
 ![Comparison by study or collection](../outputs/part1/comparison/stock_by_study.png)
 
 [Your figure caption]
@@ -336,6 +225,8 @@ view_figure("outputs/part1/comparison/stock_by_study.png")
 ```
 
 </details>
+
+#### Comparison by province or source region
 
 ![Comparison by province or source region](../outputs/part1/comparison/stock_by_source_region.png)
 
@@ -353,6 +244,8 @@ view_figure("outputs/part1/comparison/stock_by_source_region.png")
 
 </details>
 
+#### Carbon concentration comparison
+
 ![Carbon concentration by collection](../outputs/part1/comparison/concentration_by_dataset.png)
 
 [Your figure caption]
@@ -368,6 +261,8 @@ view_figure("outputs/part1/comparison/concentration_by_dataset.png")
 ```
 
 </details>
+
+#### Bulk density comparison
 
 ![Bulk density by collection](../outputs/part1/comparison/density_by_dataset.png)
 
@@ -387,13 +282,27 @@ view_figure("outputs/part1/comparison/density_by_dataset.png")
 
 Study and source-region figures show the 20 largest groups by record count. Complete tables retain all groups, intervals and datums. Counts are profile records, not necessarily independent sites.
 
-</details>
-
 ### Measurements and comparisons
 
-Use the mean to summarise cores, sample SD to describe their spread, and `CV (%) = 100 × SD / mean` to express relative spread. R uses `mean()` and `stats::sd()`.
+Calculate these statistics for the same carbon pool and depth window:
 
-The two-core forest mean is 25.01 kg C/m²; the two-core wetland mean is 11.57. These describe this example, not the wider landscape. [View statistics](../outputs/part1/descriptive_statistics.csv).
+| Statistic | What it describes | R calculation |
+| --- | --- | --- |
+| Number of cores, `n` | How many core values enter the summary | `length(x)` |
+| Mean | Average stock | `mean(x)` |
+| Sample standard deviation, SD | Spread of core stocks around their mean, in the stock units | `stats::sd(x)` |
+| Coefficient of variation, CV (%) | Spread relative to the mean | `100 * stats::sd(x) / mean(x)` |
+
+Here, `x` is a vector of complete 0–30 cm core stocks. For example, inspect the saved forest summary or reproduce it directly:
+
+```r
+cores <- read.csv("outputs/part1/core_stocks.csv")
+x <- cores$stock_0_30_kg_m2[cores$group == "Forest cores"]
+c(n = length(x), mean = mean(x), SD = stats::sd(x),
+  CV_pct = 100 * stats::sd(x) / mean(x))
+```
+
+The two-core forest mean is 25.01 kg C/m² with SD 14.41 and CV 57.63%. The two-core wetland mean is 11.57 kg C/m² with SD 1.60 and CV 13.81%. These statistics describe the supplied cores. With only two cores in each group, they provide limited information about variation across the wider landscape. SD and CV are missing for ecosystems represented by only one core. [View all statistics](../outputs/part1/descriptive_statistics.csv).
 
 ### Data to retain
 
@@ -403,7 +312,7 @@ Keep core/sample IDs, ecosystem, slice boundaries, depth reference, density, car
 
 ### A Estimate totals by ecosystem
 
-**Input:** Step 2's [core stocks and coordinates](../outputs/part1/core_stocks.csv), plus the [area boundary](../data/aoi/study_area.geojson).
+**Input:** Step 2's [core stocks and coordinates](../outputs/part1/core_stocks.csv), plus the [area boundary](../data/aoi/study_area.geojson). An area of interest (AOI) is the polygon that defines the study boundary. The example AOI is saved as `data/aoi/study_area.geojson`; its path is recorded in `config.R`.
 
 **Output:** [Area totals](../outputs/part2/area/area_totals.csv), map figures, and [area checkpoint](../outputs/part2/area/area_analysis.rds). **Used next:** Part 2B reads that checkpoint, including the grid and four core stocks.
 
@@ -439,13 +348,13 @@ view_figure("outputs/part2/area/group_stock_map.png")
 
 </details>
 
-**Analyse:** Apply each group's mean 0–30 cm stock to its area:
+**Analysis:** Divide the AOI into map cells and assign each cell the ecosystem of its nearest core. Apply the forest or wetland group mean 0–30 cm stock to the corresponding cells. Add stock multiplied by area to obtain a total:
 
 `Total (tonnes C) = mean stock (kg C/m²) × area (m²) / 1,000`
 
-**Read:** `sf` calculates clipped cell areas; `terra` writes map grids. The example assigns ecosystem zones by the nearest core. They are hypothetical land cover.
+**Interpretation:** `sf` clips cells to the boundary and calculates their areas; `terra` saves the raster maps. A raster is a map made of grid cells. The ecosystem zones are hypothetical land cover, so the resulting totals demonstrate the calculation rather than estimate a real inventory. Uniform colour within each forest or wetland group reflects the use of one mean stock.
 
-**Apply:** Replace these zones with mapped ecosystems and representative sampling before estimating a real community inventory. [View totals](../outputs/part2/area/area_totals.csv).
+**Application:** Compare the stock per unit area with the total stock: an ecosystem with a lower mean stock can still contain more carbon if it covers a larger area. For a real community inventory, use mapped ecosystem areas and sampling that represents their variation. [View totals](../outputs/part2/area/area_totals.csv).
 
 [Area methods](../R/spatial.R)
 
@@ -471,11 +380,11 @@ view_figure("outputs/part2/spatial/idw_stock_map.png")
 
 </details>
 
-**Analyse:** Give nearer cores more influence using inverse-distance weighting: `wᵢ = 1 / distanceᵢ²`; `stock(s) = Σ(wᵢ × stockᵢ) / Σwᵢ`. Base R calculates the weighted average; `sf::st_distance()` supplies distances.
+**Analysis:** Estimate the stock in each grid cell using inverse-distance weighting (IDW). This method gives nearer cores more influence: `wᵢ = 1 / distanceᵢ²`; `stock(s) = Σ(wᵢ × stockᵢ) / Σwᵢ`. Here, `distanceᵢ` is the distance from the cell to core `i`, `stockᵢ` is that core's stock, and `Σ` means add across cores. The power is 2. Base R calculates the weighted average; `sf::st_distance()` supplies distances. `terra` saves the raster and `ggplot2` draws the map.
 
-**Read:** Smooth transitions show the weighting rule. Four cores do not establish spatial accuracy; this step does not fit kriging or a variogram.
+**Interpretation:** Smooth transitions show the weighting rule. Four cores do not establish spatial accuracy; this step does not fit kriging or a variogram.
 
-**Apply:** Explore how sample placement affects the picture and where more measurements could help.
+**Application:** Compare this surface with the group mean map in A. Identify where distance weighting changes the pattern and where sparse sampling limits interpretation. Use those gaps to suggest additional sampling locations.
 
 [Distance-weighting methods](../R/spatial.R)
 
@@ -518,13 +427,21 @@ view_figure("outputs/part2/spatial/observed_predicted.png")
 
 </details>
 
-**Analyse:** Fit `stock ~ wetness + elevation` with `stats::lm()`. This separate exercise creates 160 simulated observations and simulated predictors: 112 train the model and 48 eastern observations test it.
+**Analysis:** Fit a linear regression using `stats::lm()`: `stock ~ wetness + elevation`. A regression estimates how stock changes with the predictor variables, here wetness and elevation. This separate exercise creates 160 simulated observations and simulated predictors. The model is fitted to 112 training observations; 48 eastern observations are held out for testing, meaning they do not enter that fit.
 
-**Read:** Points near the diagonal have smaller prediction errors. `RMSE = √mean((observed − predicted)²)` summarises error size. These are simulation results, not extra field observations or validation of real carbon stocks. The final demonstration map is refitted after testing.
+**Interpretation:** Points near the diagonal have smaller prediction errors. The held-out root mean square error, `RMSE = √mean((observed − predicted)²)`, is about 1.43 kg C/m²; lower values indicate smaller errors for the same quantity and units. The [metrics table](../outputs/part2/spatial/holdout_metrics.csv) also reports mean absolute error, `MAE = mean(abs(observed − predicted))`, and `R² = 1 − Σ(observed − predicted)² / Σ(observed − mean(observed))²`. Here, R² compares the predictions with using the mean held-out stock for every held-out observation. These scores assess the simulation; the extra observations do not represent field measurements. After testing, the model is fitted to all 160 simulated observations to make the final demonstration map.
 
-**Apply:** With real data, select useful predictors and test predictions at locations excluded from fitting.
+**Application:** Compare the modelling assumptions with IDW: this method uses relationships with landscape variables rather than distance alone. With real data, use measured stocks and matching predictor maps, then assess predictions at locations excluded from fitting. The spatial separation of the test area checks performance away from the training locations.
 
 [Simulation, regression and spatial-holdout methods](../R/spatial.R)
+
+**Comparison checkpoint:** Read the totals from A, B and C over the same AOI and 0–30 cm depth:
+
+```r
+read.csv("outputs/part2/spatial/method_totals.csv")
+```
+
+The [method totals](../outputs/part2/spatial/method_totals.csv) are approximately 6.38 million tonnes C for group means, 6.40 million for IDW and 6.48 million for the simulated predictor model. Similar totals can conceal different spatial patterns. Identify which input data and assumptions changed between methods before interpreting their agreement.
 
 ## Part 3 Bayesian updating of prior maps
 
@@ -564,17 +481,25 @@ view_figure("outputs/part3/uncertainty.png")
 
 </details>
 
-**Analyse:** Combine a prior estimate and a new estimate, giving more weight to the estimate with less uncertainty. Base R implements the normal–normal update:
+**Analysis:** Use Bayesian updating to combine a prior estimate (the map available before the new analysis) with a new estimate (the IDW map from Part 2B). The result is the posterior, or updated estimate. This normal–normal model gives greater weight to the estimate with lower variance. Base R implements the update:
 
 `Vpost = 1 / (1/Vprior + 1/Vnew)`
 
 `Meanpost = Vpost × (Meanprior/Vprior + Meannew/Vnew)`
 
-**Read:** `V` means variance, or SD². The example combines an invented prior map with the distance-weighted map. Prior SD = 5 and new-estimate SD = 3 kg C/m² are assumptions; updated SD is about 2.57.
+**Interpretation:** `V` means variance, or SD². “Prior”, “new” and “post” identify the two input estimates and the posterior. Prior SD = 5 and new-estimate SD = 3 kg C/m² are assumptions; the updated SD is about 2.57. Because the new estimate has lower assumed variance, the updated map is closer to it. Compare the prior, updated and change panels to locate the largest adjustments; use the uncertainty figure to examine the effect of the assumed SDs.
 
-**Apply:** Match quantities and use justified uncertainties before updating a real map. The formula assumes independent errors. Core-to-core SD is not automatically map uncertainty, and cell uncertainty does not give uncertainty for the whole-area total.
+**Application:** Before updating a real map, match carbon pool, depth, units and spatial coverage, and justify the uncertainties assigned to both estimates. This formula assumes independent errors. Variation among cores is not automatically uncertainty in a map estimate, and uncertainty for individual cells does not directly give uncertainty for a whole-area total.
 
 [Bayesian formula and assumptions](../R/spatial.R)
+
+**Comparison checkpoint:** Inspect how the mean stock, area total and assumed cell uncertainty change from the prior to the updated estimate:
+
+```r
+read.csv("outputs/part3/bayesian_summary.csv")
+```
+
+The updated total is about 5.82 million tonnes C, between the prior total of 4.19 million and the new IDW estimate of 6.40 million. Explain why the updated result is closer to IDW using the assumed uncertainties. These totals demonstrate the updating calculation; the stated cell uncertainties are not uncertainty bounds on the totals.
 
 ## 4 Case studies
 
@@ -592,4 +517,8 @@ Run steps in order, or use `source("run_all.R")`. The [input/output guide](data-
 
 The course rebuilds community comparisons and figures from [precomputed reference summaries](../SOURCES.md); it does not rebuild those summaries from raw reference profiles. Keep the original data, configuration and QC outputs with your results.
 
-</details>
+## Adapt the workshop to your own area
+
+Use the [starter guide](start_here.md) for the exact field-sheet columns, coordinate format and AOI file instructions. Save your measurements as `data/input/my_field_data.csv` and your polygon as `data/aoi/my_aoi.geojson`, then run `source("run_my_data.R")`. This provides a convenient starting exercise for your own stocks, profiles and IDW map in `outputs/my_data/`; it does not replace the complete workshop above. Use matching measurements and coordinates for the new AOI. At least two distinct locations inside the boundary must have complete 0–30 cm stock values for this IDW exercise.
+
+To transfer the later analyses to a real area, prepare the corresponding inputs: mapped ecosystems and representative stock values for area totals; observed stocks and matching predictor maps for regression and testing; and a prior map with justified uncertainties for Bayesian updating. The supplied scripts for these stages retain their illustrative inputs. Changing only the AOI does not supply those data or convert the demonstration into a real carbon inventory.
