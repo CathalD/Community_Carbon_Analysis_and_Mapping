@@ -39,3 +39,5 @@ Each section links its inputs, runnable code, example figures and interpretation
 Save measurements as `data/input/my_field_data.csv` and a matching boundary as `data/aoi/my_aoi.geojson`, then run `source("run_my_data.R")`. This separate practice script covers field stocks, profiles and IDW; it saves to `outputs/my_data/`. The [guide](docs/start_here.md) explains the columns, units and additional inputs needed to adapt later analyses.
 
 Code is [MIT licensed](LICENSE); see [source details](SOURCES.md) for third-party data.
+
+The full workshop now includes a separate ordinary-kriging simulation (`scripts/04b_kriging.R`) with a training variogram and buffered holdout assessment. IDW uses `gstat`; kriging is not fitted to the four illustrative cores. Geographic context is bundled for offline use. See the [methods audit](docs/methods-audit.md) and [optional real local inputs](docs/local-inputs.md). `run_local_workshop.R` provides explicit interfaces for local ecosystem assignments, predictors/assessment observations and prior uncertainties; missing stages are reported as not run.

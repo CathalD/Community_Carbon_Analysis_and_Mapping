@@ -10,7 +10,7 @@ Run every stage with:
 source("run_all.R")
 ```
 
-Or run `source("00_setup.R")`, then run the five analysis scripts below in order.
+Or run `source("00_setup.R")`, then run the analysis scripts below, including 04b_kriging in order.
 
 | Stage | Inputs | Run | Results and next use |
 | --- | --- | --- | --- |
@@ -79,3 +79,9 @@ The AOI sets the map boundary; it does not supply carbon values or move sample l
 | Bayesian updating | An appropriate prior map, a new estimate and justified uncertainty for both, with their dependence considered. |
 
 The supplied scripts create hypothetical ecosystem zones, simulated landscape observations and an invented prior to teach these methods. They are part of the workshop analysis. Reusing those invented inputs with another boundary would remain an illustrative exercise. Adapting these later analyses to measured local data requires supplying the corresponding inputs and adjusting their import steps.
+
+## Added kriging and local interfaces
+
+Run `source("scripts/04b_kriging.R")` between the spatial and Bayesian steps. It reads the Part 2A AOI/grid and writes a separate simulation, training variogram, conditional kriging mean/SD and buffered holdout comparison under `outputs/part2/kriging/`. It supplies no likelihood uncertainty to Part 3. `run_all.R` includes this sixth analysis script.
+
+For real local later-stage inputs and exact column names, use [local-inputs.md](local-inputs.md) and `run_local_workshop.R`. The shorter `run_my_data.R` retains its original field-and-IDW purpose. Named generated files and downstream checkpoints are invalidated when their upstream script runs.

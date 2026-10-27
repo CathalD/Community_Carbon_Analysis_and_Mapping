@@ -194,6 +194,8 @@ import_core_workbook <- function(path, density_override_J7=NA_real_) {
   if (any(missing_oc) && (length(factor)!=1 || !is.finite(factor) || factor<=0 || factor>1)) {
     stop("A valid LOI-to-carbon factor is required when organic carbon is absent.")
   }
+  if (any(missing_oc & (!is.finite(soil$loi_pct) | soil$loi_pct < 0 | soil$loi_pct > 100)))
+    stop("Missing organic carbon requires valid LOI between 0 and 100 percent.")
   soil$carbon_basis <- ifelse(missing_oc,"LOI-derived organic carbon","Entered organic carbon")
   soil$carbon_used_pct <- soil$oc_pct
   soil$carbon_used_pct[missing_oc] <- soil$loi_pct[missing_oc]*factor

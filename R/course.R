@@ -11,7 +11,7 @@ run_course <- function(workbook_path, aoi_path, output_dir = "outputs/my_data",
     file.path(output_dir, "part1", c("layer_stocks.csv", "core_stocks.csv",
       "descriptive_statistics.csv", "qc_flags.csv", "depth_profiles.png",
       "cumulative_stock.png", "common_depth_stock.png")),
-    file.path(output_dir, "maps", c("sample_map.png", "idw_stock_map.png",
+    file.path(output_dir, "maps", c("location_map.png", "sample_map.png", "idw_stock_map.png",
       "idw_stock_0_30.tif", "grid_values.csv", "mapping_metadata.csv", "excluded_cores.csv")))
   input_paths <- normalizePath(c(workbook_path, aoi_path), mustWork = FALSE)
   if (any(normalizePath(generated, mustWork = FALSE) %in% input_paths)) {

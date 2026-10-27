@@ -116,3 +116,7 @@ To adapt the later analyses to a real area, you also need representative ecosyst
 - **Missing column or invalid number:** compare your field sheet with the headers and units above.
 - **No mapped samples:** check longitude signs, the boundary and complete 0–30 cm coverage.
 - **Package installation failed:** read the installation message. Some systems need extra system libraries for `sf` or `terra`; ask your instructor or computer support for help.
+
+## Continue with real local analyses
+
+The complete teaching example remains `source("run_all.R")`, including ordinary kriging on separate simulated observations. To add reference comparisons and optional real ecosystem, regression and prior inputs to your own-data exercise, use `source("run_local_workshop.R")`. Follow [the exact local interfaces](local-inputs.md). Missing local inputs do not trigger simulated substitutes.

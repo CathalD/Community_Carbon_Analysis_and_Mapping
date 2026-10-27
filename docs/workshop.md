@@ -4,7 +4,9 @@ This workshop follows soil carbon data from field and laboratory measurements to
 
 By the end of the workshop, you will be able to calculate and compare soil carbon stocks, explain how different mapping methods use the data, and interpret the assumptions and uncertainty in a Bayesian update.
 
-## Workshop preparation
+## Workshop overview
+
+### Before you begin
 
 Follow the [starter guide](start_here.md) to download the course and open `Community_Carbon_Analysis_and_Mapping.Rproj` in RStudio. Run code in the Console. `source()` runs the code in a saved R script.
 
@@ -316,6 +318,18 @@ Keep core/sample IDs, ecosystem, slice boundaries, depth reference, density, car
 
 **Output:** [Area totals](../outputs/part2/area/area_totals.csv), map figures, and [area checkpoint](../outputs/part2/area/area_analysis.rds). **Used next:** Part 2B reads that checkpoint, including the grid and four core stocks.
 
+![Regional location of the AOI](../outputs/part2/area/location_map.png)
+
+[Your figure caption]
+
+```r
+source("scripts/03_area.R")
+source("R/view.R")
+view_figure("outputs/part2/area/location_map.png")
+```
+
+The regional view uses cached land, lake, marine-area and settlement data. Main maps use a common extent, projected scale and Canada locator. This coarse context is for orientation; it does not define local ecosystems or exclude water from the analysis.
+
 ![Conceptual ecosystem areas](../outputs/part2/area/ecosystem_map.png)
 
 [Your figure caption]
@@ -380,13 +394,47 @@ view_figure("outputs/part2/spatial/idw_stock_map.png")
 
 </details>
 
-**Analysis:** Estimate the stock in each grid cell using inverse-distance weighting (IDW). This method gives nearer cores more influence: `wᵢ = 1 / distanceᵢ²`; `stock(s) = Σ(wᵢ × stockᵢ) / Σwᵢ`. Here, `distanceᵢ` is the distance from the cell to core `i`, `stockᵢ` is that core's stock, and `Σ` means add across cores. The power is 2. Base R calculates the weighted average; `sf::st_distance()` supplies distances. `terra` saves the raster and `ggplot2` draws the map.
+**Analysis:** Estimate the stock in each grid cell using inverse-distance weighting (IDW). This method gives nearer cores more influence: `wᵢ = 1 / distanceᵢ²`; `stock(s) = Σ(wᵢ × stockᵢ) / Σwᵢ`. Here, `distanceᵢ` is the distance from the cell to core `i`, `stockᵢ` is that core's stock, and `Σ` means add across cores. The power is 2. `gstat::idw()` calculates the weighted average in projected metres; `sf::st_distance()` supplies the separate distance diagnostic. `terra` saves the raster and `ggplot2` draws the map.
 
-**Interpretation:** Smooth transitions show the weighting rule. Four cores do not establish spatial accuracy; this step does not fit kriging or a variogram.
+**Interpretation:** Smooth transitions show the weighting rule. Four cores do not establish spatial accuracy or a credible variogram. IDW and ordinary kriging are different methods; the following separate simulation restores the original overview’s kriging lesson.
 
 **Application:** Compare this surface with the group mean map in A. Identify where distance weighting changes the pattern and where sparse sampling limits interpretation. Use those gaps to suggest additional sampling locations.
 
 [Distance-weighting methods](../R/spatial.R)
+
+#### Ordinary kriging with simulated observations
+
+**Input:** The same AOI and grid in `area_analysis.rds`, plus 240 newly simulated observations from a stationary Gaussian spatial process. These are independent of the four workbook cores and separate from C’s regression simulation.
+
+**Method and equation:** A variogram describes how differences between values change with distance: `gamma(h) = 0.5 × E[(Z(s+h) − Z(s))²]`. We use an exponential model: `gamma(h) = nugget + partial_sill × (1 − exp(−h/range))` for positive distance. The nugget represents variation at very short distances and measurement-scale noise; the partial sill describes spatially structured variation. Here the exponential range is a scale parameter; about three times that distance gives 95% of the structured sill.
+
+Ordinary kriging estimates an unknown constant mean locally using `predicted stock = Σ(lambda_i × observed stock_i)`, with `Σlambda_i = 1`. The covariance model and locations determine the weights and conditional prediction variance. `gstat::variogram()`, `fit.variogram()` and `krige(stock_0_30_kg_m2 ~ 1, ...)` carry out the algorithms.
+
+![Training variogram](../outputs/part2/kriging/variogram.png)
+
+[Your figure caption]
+
+```r
+source("scripts/04b_kriging.R")
+source("R/view.R")
+view_figure("outputs/part2/kriging/variogram.png")
+```
+
+![Kriging mean and conditional SD](../outputs/part2/kriging/kriging_maps.png)
+
+[Your figure caption]
+
+```r
+source("R/view.R")
+view_figure("outputs/part2/kriging/kriging_maps.png")
+read.csv("outputs/part2/kriging/metrics.csv")
+```
+
+**Assessment:** Hold out the eastern quarter, with a buffer of 5% of the sampled east–west span. Fit the variogram only on training data. Use five explicit candidate ranges, fit nonnegative nugget and partial sill, and choose the lowest training variogram fit error. Reject singular or unsupported fits. No held-out response chooses the range. Compare kriging with IDW on these same simulated training and test observations. Refit on all simulated observations only after assessment to make the demonstration map.
+
+**Example output and interpretation:** With the fixed seed, 159 training and 60 held-out observations give RMSE about 3.63 for kriging and 2.87 kg C/m² for IDW. The nominal 95% conditional kriging intervals cover 80% of held-out values. This is a single simulated realisation, not evidence that either method is always better. A fitted covariance model can misrepresent uncertainty, especially away from training coverage. The variance also omits fitted-parameter uncertainty. Inspect lag-bin pair counts, fit and holdout results together.
+
+**Next step:** Compare assumptions with C’s predictor model. These point predictions are not measured cell averages or block-kriging estimates. Do not add this separate simulation’s totals to the workbook inventory, use its variance as the four-core IDW uncertainty, or call it field-map validation. A real kriging analysis needs sufficient spatial sampling, trend and anisotropy checks, a defensible covariance model and assessment designed for its intended prediction task. [Maintained code](../R/kriging.R) · [Methods and sources](methods-audit.md).
 
 ### C Use landscape information
 
@@ -442,6 +490,12 @@ read.csv("outputs/part2/spatial/method_totals.csv")
 ```
 
 The [method totals](../outputs/part2/spatial/method_totals.csv) are approximately 6.38 million tonnes C for group means, 6.40 million for IDW and 6.48 million for the simulated predictor model. Similar totals can conceal different spatial patterns. Identify which input data and assumptions changed between methods before interpreting their agreement.
+
+Compare these maps with the prior before updating it. `prior_comparison.csv` uses the same invented prior as Part 3, on the same grid, depth and units. Differences from an invented prior cannot measure accuracy. For a real prior, first reconcile footprint, mask, depth datum and point-versus-cell support; do not compare misaligned raster pixels.
+
+```r
+read.csv("outputs/part2/spatial/prior_comparison.csv")
+```
 
 ## Part 3 Bayesian updating of prior maps
 
@@ -507,11 +561,11 @@ The updated total is about 5.82 million tonnes C, between the prior total of 4.1
 
 [Your case-study text, figures and interpretation]
 
-The real Fort Severn analysis has not been rerun in this illustrative course.
+The real Fort Severn analysis has not been rerun in this illustrative course. Retain the original case-study plan: report and poster; Li et al. 2025 Hudson and James Bay lowland prior; Riley, NRCan peat, WoSIS, NPDB and PEATGRIDS context; peat-depth and mineral-soil questions. The original Li citation and map specification still need confirmation before an import is possible. Match depth, carbon pool, units and support before comparing or updating any such product. Chronology, accumulation rates and accumulation-through-time curves remain deferred; the depth-based cumulative stock curve above is retained.
 
 ## Code and detailed methods
 
-`readxl` imports the workbook; base R/`stats` calculate stocks, summaries, regression and updating; `sf` handles geometry and distance; `terra` writes rasters; `ggplot2` draws figures.
+`readxl` imports the workbook; base R/`stats` calculate stocks, summaries, regression and updating; `gstat` supplies IDW and ordinary kriging; `sf` handles geometry and distance; `terra` writes rasters; `ggplot2` draws figures.
 
 Run steps in order, or use `source("run_all.R")`. The [input/output guide](data-flow.md) shows each dependency. If you change the workbook, rerun Step 2 and the later steps; opening an existing image alone does not refresh it. [Field methods](../R/field.R), [comparison methods](../R/compare.R) and [spatial/Bayesian methods](../R/spatial.R) contain the full functions. Each spatial output folder includes `method_metadata.csv` with its formula, packages and assumptions.
 
@@ -521,4 +575,4 @@ The course rebuilds community comparisons and figures from [precomputed referenc
 
 Use the [starter guide](start_here.md) for the exact field-sheet columns, coordinate format and AOI file instructions. Save your measurements as `data/input/my_field_data.csv` and your polygon as `data/aoi/my_aoi.geojson`, then run `source("run_my_data.R")`. This provides a convenient starting exercise for your own stocks, profiles and IDW map in `outputs/my_data/`; it does not replace the complete workshop above. Use matching measurements and coordinates for the new AOI. At least two distinct locations inside the boundary must have complete 0–30 cm stock values for this IDW exercise.
 
-To transfer the later analyses to a real area, prepare the corresponding inputs: mapped ecosystems and representative stock values for area totals; observed stocks and matching predictor maps for regression and testing; and a prior map with justified uncertainties for Bayesian updating. The supplied scripts for these stages retain their illustrative inputs. Changing only the AOI does not supply those data or convert the demonstration into a real carbon inventory.
+To transfer the later analyses to a real area, prepare the corresponding inputs: mapped ecosystems and representative stock values for area totals; observed stocks and matching predictor maps for regression and testing; and a prior map with justified uncertainties for Bayesian updating. Use `source("run_local_workshop.R")` for the configurable local-data interfaces described in [local inputs](local-inputs.md). Unconfigured later stages are reported as not run. The complete `run_all.R` retains the teaching simulations. Changing only the AOI does not supply those data or convert the demonstration into a real carbon inventory.

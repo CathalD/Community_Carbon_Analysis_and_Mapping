@@ -1,4 +1,4 @@
-required_packages <- c("readxl", "ggplot2", "sf", "terra")
+required_packages <- c("readxl", "ggplot2", "sf", "terra", "gstat")
 missing_packages <- required_packages[!vapply(required_packages, requireNamespace,
   quietly = TRUE, FUN.VALUE = logical(1))]
 if (length(missing_packages)) {

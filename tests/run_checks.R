@@ -12,3 +12,6 @@ stopifnot(all(!depth100$eligible[depth100$core_id %in% core$core_id[!core$comple
 expected <- c("depth_profiles.png", "common_depth_stock.png", "cumulative_stock.png")
 stopifnot(all(file.exists(file.path("outputs/part1", expected))))
 message("Course checks passed.")
+source("tests/check_revision.R")
+source("tests/check_local.R")
+source("tests/check_workshop.R")

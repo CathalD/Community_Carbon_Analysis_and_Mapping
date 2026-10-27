@@ -1,0 +1,3 @@
+"method","n_training","n_holdout","buffer_m","RMSE","MAE","mean_standardised_error","coverage95","scope"
+"Ordinary kriging",159,60,1018.88854980095,3.62954507952725,3.12506950217803,-0.96479734812569,0.8,"One buffered eastern simulation holdout; conditional model variance; not field validation"
+"IDW power 2",159,60,1018.88854980095,2.87311008711376,2.45654203107338,NA,NA,"One buffered eastern simulation holdout; conditional model variance; not field validation"

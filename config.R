@@ -6,5 +6,7 @@ course_config <- list(
   density_override_J7 = 0.09,
   illustrative = TRUE,
   aoi_path = "data/aoi/study_area.geojson",
+  grid_cellsize_m = 500,
+  depth_datum = "surface",
   seed = 20261026
 )

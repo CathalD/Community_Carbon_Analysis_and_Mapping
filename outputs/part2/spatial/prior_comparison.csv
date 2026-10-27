@@ -1,0 +1,4 @@
+"method","prior_total_t_C","estimate_total_t_C","difference_t_C","scope"
+"Group means",4193509.78544119,6375064.81058173,2181555.02514054,"Invented independent prior; same AOI, point-grid approximation and 0-30 cm surface stock; no accuracy ranking"
+"IDW",4193509.78544119,6399978.48151271,2206468.69607152,"Invented independent prior; same AOI, point-grid approximation and 0-30 cm surface stock; no accuracy ranking"
+"Simulated predictor model",4193509.78544119,6476703.85020035,2283194.06475916,"Invented independent prior; same AOI, point-grid approximation and 0-30 cm surface stock; no accuracy ranking"
