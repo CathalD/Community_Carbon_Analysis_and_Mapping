@@ -13,35 +13,84 @@
     file.path(out, "method_metadata.csv"), row.names = FALSE)
 }
 
-.read_spatial_inputs <- function(config, core_path = "outputs/part1/core_stocks.csv") {
+.read_spatial_inputs <- function(config, core_path = "outputs/part1/core_stocks.csv", excluded_path = NULL) {
   .spatial_packages()
-  if (!isTRUE(config$illustrative)) {
-    stop("These maps require illustrative = TRUE; their ecosystems and uncertainty are assumptions.")
+  if (!file.exists(core_path)) stop("Calculate the field stocks first; core_stocks.csv is missing.")
+  if (is.null(config$aoi_path) || !file.exists(config$aoi_path)) {
+    stop("AOI file not found. Save your boundary as data/aoi/my_aoi.geojson and check aoi_path in your settings.")
   }
-  if (!file.exists(core_path)) stop("Run scripts/01_field.R first.")
-  if (is.null(config$aoi_path) || !file.exists(config$aoi_path)) stop("AOI GeoJSON is missing.")
   cores <- utils::read.csv(core_path, stringsAsFactors = FALSE)
-  needed <- c("core_id", "ecosystem", "group", "latitude", "longitude", "stock_0_30_kg_m2")
+  needed <- c("core_id", "latitude", "longitude", "stock_0_30_kg_m2")
   if (!all(needed %in% names(cores))) stop("Core stock table lacks spatial input columns.")
   if (anyDuplicated(cores$core_id)) stop("Core IDs must be unique.")
-  if (any(!is.finite(cores$latitude) | !is.finite(cores$longitude) |
-    !is.finite(cores$stock_0_30_kg_m2))) stop("Each mapped core needs coordinates and a complete 0–30 cm stock.")
-  if (any(abs(cores$latitude) > 90 | abs(cores$longitude) > 180)) stop("Invalid latitude or longitude.")
+  for (v in c("latitude", "longitude", "stock_0_30_kg_m2")) {
+    cores[[v]] <- suppressWarnings(as.numeric(cores[[v]]))
+  }
+  for (v in c("ecosystem", "group")) if (!v %in% names(cores)) cores[[v]] <- "Not recorded"
   aoi <- sf::st_read(config$aoi_path, quiet = TRUE)
-  if (is.na(sf::st_crs(aoi))) stop("The AOI needs a coordinate reference system.")
+  if (!nrow(aoi) || any(sf::st_is_empty(aoi))) stop("The AOI boundary is empty. Export a closed polygon boundary.")
+  if (!all(as.character(sf::st_geometry_type(aoi)) %in% c("POLYGON", "MULTIPOLYGON"))) {
+    stop("The AOI must be a polygon boundary, not points or lines. Export it as a polygon GeoJSON.")
+  }
+  if (is.na(sf::st_crs(aoi))) stop("The AOI needs a coordinate reference system. Export WGS84 GeoJSON from your GIS.")
   aoi <- sf::st_transform(sf::st_make_valid(aoi), 4326)
   bb <- sf::st_bbox(aoi)
+  if (any(!is.finite(bb))) stop("The AOI has invalid coordinates. Check its coordinate reference system.")
   local_crs <- paste0("+proj=laea +lat_0=", (bb["ymin"] + bb["ymax"]) / 2,
     " +lon_0=", (bb["xmin"] + bb["xmax"]) / 2, " +datum=WGS84 +units=m +no_defs")
-  aoi <- sf::st_sf(area_id = "Illustrative study area", geometry = sf::st_union(sf::st_transform(aoi, local_crs)))
+  aoi <- sf::st_transform(aoi, local_crs)
+  if (any(!as.character(sf::st_geometry_type(aoi)) %in% c("POLYGON", "MULTIPOLYGON"))) {
+    aoi <- tryCatch(suppressWarnings(sf::st_collection_extract(aoi, "POLYGON")),
+      error = function(e) stop("The AOI does not enclose a valid polygon. Check its boundary in your GIS."))
+  }
+  aoi <- sf::st_sf(area_id = "Study area", geometry = sf::st_union(sf::st_make_valid(aoi)))
+  area <- as.numeric(sf::st_area(aoi))
+  if (length(area) != 1 || !is.finite(area) || area <= 0) stop("The AOI must enclose an area greater than zero.")
+  reason <- rep("", nrow(cores))
+  add_reason <- function(which_rows, text) {
+    reason[which_rows] <<- ifelse(nzchar(reason[which_rows]), paste(reason[which_rows], text, sep = "; "), text)
+  }
+  valid_coordinates <- is.finite(cores$latitude) & is.finite(cores$longitude) &
+    abs(cores$latitude) <= 90 & abs(cores$longitude) <= 180
+  add_reason(!valid_coordinates, "Missing or invalid WGS84 latitude/longitude")
+  add_reason(!is.finite(cores$stock_0_30_kg_m2), "Incomplete 0–30 cm stock")
+  located <- which(valid_coordinates)
+  if (length(located)) {
+    located_points <- sf::st_as_sf(cores[located, ], coords = c("longitude", "latitude"), crs = 4326)
+    inside <- lengths(sf::st_intersects(sf::st_transform(located_points, local_crs), aoi)) > 0
+    add_reason(located[!inside], "Outside the AOI boundary")
+  }
+  excluded <- cores[nzchar(reason), , drop = FALSE]
+  excluded$reason <- reason[nzchar(reason)]
+  if (!is.null(excluded_path)) utils::write.csv(excluded, excluded_path, row.names = FALSE, na = "")
+  if (nrow(excluded)) message("Excluded ", nrow(excluded), " core(s) from mapping: ",
+    paste(excluded$core_id, collapse = ", "), ". Review excluded_cores.csv; field results are retained.")
+  cores <- cores[!nzchar(reason), , drop = FALSE]
+  if (nrow(cores) < 2) {
+    stop("Mapping needs at least two cores at different locations inside the AOI, with complete 0–30 cm stocks. Check coordinates, section depths and your boundary; field outputs are still available.")
+  }
+  if (anyDuplicated(cores[c("latitude", "longitude")])) {
+    stop("Two mapped cores share the same coordinates. For this simple map, keep one representative core per location or combine repeated cores before mapping.")
+  }
   points <- sf::st_as_sf(cores, coords = c("longitude", "latitude"), crs = 4326, remove = FALSE)
   points <- sf::st_transform(points, local_crs)
-  if (!all(lengths(sf::st_intersects(points, aoi)) > 0)) stop("A mapped core is outside the AOI.")
-  list(aoi = aoi, points = points, cores = cores)
+  list(aoi = aoi, points = points, cores = cores, excluded = excluded)
 }
 
 .area_grid <- function(aoi, cellsize_m = 500) {
+  bb <- sf::st_bbox(aoi)
+  span <- c(unname(bb["xmax"] - bb["xmin"]), unname(bb["ymax"] - bb["ymin"]))
+  if (any(!is.finite(span)) || any(span <= 0)) stop("The AOI must have a nonempty polygon boundary.")
+  if (is.null(cellsize_m)) {
+    # Bounding-box area also protects against widely separated AOI polygons.
+    cellsize_m <- max(sqrt(prod(span) / 2500), max(span) / 2500, .001)
+    cellsize_m <- signif(cellsize_m, 2)
+  }
   if (length(cellsize_m) != 1 || !is.finite(cellsize_m) || cellsize_m <= 0) stop("Invalid grid resolution.")
+  candidates <- prod(pmax(1, ceiling(span / cellsize_m)))
+  if (!is.finite(candidates) || candidates > 10000) {
+    stop("This grid would have more than 10,000 cells. Increase cellsize_m, or use NULL for an automatic grid.")
+  }
   grid <- sf::st_make_grid(aoi, cellsize = cellsize_m, square = TRUE)
   full <- sf::st_sf(cell_id = seq_along(grid), geometry = grid)
   centres <- sf::st_coordinates(sf::st_centroid(sf::st_geometry(full)))
@@ -49,13 +98,13 @@
   full <- full[lengths(sf::st_intersects(full, aoi)) > 0, ]
   clipped <- suppressWarnings(sf::st_intersection(full, sf::st_geometry(aoi)))
   clipped$area_m2 <- as.numeric(sf::st_area(clipped))
-  clipped <- clipped[clipped$area_m2 > 1e-6, ]
+  clipped <- clipped[is.finite(clipped$area_m2) & clipped$area_m2 > 0, ]
   rownames(clipped) <- NULL
   # Polygon intersections give exact AOI area weights, including boundary cells.
   if (abs(sum(clipped$area_m2) / as.numeric(sf::st_area(aoi)) - 1) > 1e-7) {
     stop("Grid intersections do not cover the AOI exactly.")
   }
-  list(cells = clipped, cellsize_m = cellsize_m)
+  list(cells = clipped, cellsize_m = cellsize_m, candidate_cells = candidates)
 }
 
 .grid_points <- function(cells) {
@@ -122,7 +171,64 @@ idw_values <- function(distance_m, values, power = 2) {
   invisible(r)
 }
 
+run_simple_mapping <- function(config, core_path = "outputs/part1/core_stocks.csv",
+  out = "outputs/my_data/maps", cellsize_m = NULL) {
+  dir.create(out, recursive = TRUE, showWarnings = FALSE)
+  paths <- list(sample_map = file.path(out, "sample_map.png"),
+    idw_map = file.path(out, "idw_stock_map.png"),
+    idw_raster = file.path(out, "idw_stock_0_30.tif"),
+    grid_values = file.path(out, "grid_values.csv"),
+    metadata = file.path(out, "mapping_metadata.csv"),
+    excluded_cores = file.path(out, "excluded_cores.csv"))
+  # A failed rerun must not leave yesterday's maps beside today's field data.
+  # Remove only this function's known outputs; retain all other folder contents.
+  previous_outputs <- unlist(paths, use.names = FALSE)
+  previous_outputs <- previous_outputs[file.exists(previous_outputs)]
+  if (length(previous_outputs) && unlink(previous_outputs) != 0) {
+    stop("Could not clear an earlier mapping output. Close that file and run the mapping step again.")
+  }
+  x <- .read_spatial_inputs(config, core_path, paths$excluded_cores)
+  grid <- .area_grid(x$aoi, cellsize_m)
+  cells <- grid$cells
+  distance <- .distance_matrix(.grid_points(cells), x$points)
+  cells$idw_stock_0_30_kg_m2 <- idw_values(distance, x$cores$stock_0_30_kg_m2)
+  cells$nearest_core_distance_m <- apply(distance, 1, min)
+  p <- ggplot2::ggplot() +
+    ggplot2::geom_sf(data = x$aoi, fill = "#f3f3f3", colour = "grey35", linewidth = .3) +
+    ggplot2::geom_sf(data = x$points, ggplot2::aes(fill = stock_0_30_kg_m2),
+      shape = 21, colour = "grey20", size = 3) +
+    ggplot2::scale_fill_viridis_c(option = "C", name = "kg C/m²") + .map_theme()
+  ggplot2::ggsave(paths$sample_map, p, width = 7, height = 6, dpi = 180)
+  ggplot2::ggsave(paths$idw_map,
+    .stock_map(cells, x$aoi, "idw_stock_0_30_kg_m2", x$points), width = 7, height = 6, dpi = 180)
+  .write_raster(cells, "idw_stock_0_30_kg_m2", paths$idw_raster, grid$cellsize_m)
+  utils::write.csv(sf::st_drop_geometry(cells), paths$grid_values, row.names = FALSE)
+  bb <- sf::st_bbox(sf::st_transform(x$aoi, 4326))
+  metadata <- data.frame(method = "Inverse distance weighting (IDW), power 2",
+    packages = "sf; terra; ggplot2; base R",
+    formula = "stock(s) = sum(d_i^-2 * stock_i) / sum(d_i^-2)",
+    stock_depth_cm = "0–30", unit = "kg C/m2", n_cores = nrow(x$cores),
+    excluded_cores = nrow(x$excluded), grid_cellsize_m = grid$cellsize_m,
+    candidate_grid_cells = grid$candidate_cells, mapped_grid_cells = nrow(cells),
+    aoi_area_km2 = as.numeric(sf::st_area(x$aoi)) / 1e6,
+    longitude_min = unname(bb["xmin"]), longitude_max = unname(bb["xmax"]),
+    latitude_min = unname(bb["ymin"]), latitude_max = unname(bb["ymax"]),
+    source_coordinates = "WGS84 decimal-degree latitude and longitude",
+    map_projection = sf::st_crs(x$aoi)$input,
+    data_origin = if (is.null(config$data_origin)) "User-supplied data" else config$data_origin,
+    interpretation = paste("Nearby cores influence the estimate more strongly.",
+      "IDW shows a smooth estimate; it does not measure map accuracy or uncertainty.",
+      "No ecosystem areas, extra observations, prior maps or AOI carbon inventory are invented.",
+      "GeoTIFF boundary pixels are whole cells; larger AOIs use coarser grids."))
+  utils::write.csv(metadata, paths$metadata, row.names = FALSE)
+  message("Mapped ", nrow(x$cores), " core(s) at ", signif(grid$cellsize_m, 3),
+    " m resolution. Outputs: ", out)
+  invisible(list(cells = cells, aoi = x$aoi, points = x$points, cores = x$cores,
+    excluded = x$excluded, cellsize_m = grid$cellsize_m, metadata = metadata, paths = paths))
+}
+
 run_area_analysis <- function(config, core_path = "outputs/part1/core_stocks.csv", out = "outputs/part2/area", cellsize_m = 500) {
+  if (!isTRUE(config$illustrative)) stop("This ecosystem-area example requires illustrative = TRUE. Use run_simple_mapping() for your own measurements.")
   x <- .read_spatial_inputs(config, core_path)
   grid <- .area_grid(x$aoi, cellsize_m); cells <- grid$cells
   d <- .distance_matrix(.grid_points(cells), x$points)

@@ -47,3 +47,62 @@ expect_error(validate_example_density_override(wrong_section,.09))
 wrong_density <- example_row; wrong_density$bd_g_cm3 <- .12
 expect_error(validate_example_density_override(wrong_density,.09))
 message("Field checks passed: units, zero carbon, fixed-depth coverage, gaps, overlap, missing inputs and guarded example correction.")
+
+# A simple field table works with any core names and ecosystem labels.
+flat <- data.frame(core_id=c("Ottawa-A","Ottawa-A","North-B","Prairie-C"),
+  ecosystem=c("Marsh","Marsh","Tundra","Grassland"),latitude=c(45,45,68,51),
+  longitude=c(-75,-75,-110,-106),top_cm=c(0,10,0,0),bottom_cm=c(10,30,30,20),
+  bulk_density_g_cm3=c(.1,.2,.15,.3),organic_carbon_pct=c(50,10,20,5))
+flat_path <- tempfile(fileext=".csv")
+read_flat <- function(table, override=NA_real_) {
+  utils::write.csv(table,flat_path,row.names=FALSE,na="")
+  import_core_workbook(flat_path,density_override_J7=override)
+}
+flat_input <- read_flat(flat)
+single <- read_flat(flat[3, , drop=FALSE])
+stopifnot(nrow(single$layers)==1,nrow(single$cores)==1)
+flat_stocks <- calculate_core_stocks(flat_input$layers,flat_input$cores)$cores
+stopifnot(nrow(flat_input$layers)==4, nrow(flat_input$cores)==3,
+  length(unique(flat_input$layers$section_id))==4,
+  identical(sort(flat_input$cores$ecosystem),sort(c("Marsh","Tundra","Grassland"))),
+  identical(sort(flat_input$cores$group),sort(c("Marsh","Tundra","Grassland"))),
+  flat_stocks$stock_0_30_kg_m2[flat_stocks$core_id=="Ottawa-A"]==9,
+  is.na(flat_stocks$stock_0_30_kg_m2[flat_stocks$core_id=="Prairie-C"]),
+  identical(flat_input$depth_datum,"surface"))
+expect_error(read_flat(flat[,names(flat)!="organic_carbon_pct"]))
+expect_error(read_flat(flat,.09))
+bad_metadata <- flat; bad_metadata$latitude[2] <- 46
+expect_error(read_flat(bad_metadata))
+bad_metadata <- flat; bad_metadata$ecosystem[2] <- "Swamp"
+expect_error(read_flat(bad_metadata))
+missing_coordinates <- flat
+missing_coordinates$latitude[1:2] <- NA_real_
+missing_coordinates$longitude[1:2] <- NA_real_
+no_coords <- read_flat(missing_coordinates)
+no_coord_stocks <- calculate_core_stocks(no_coords$layers,no_coords$cores)$cores
+stopifnot(any(no_coords$qc$check=="missing_coordinates"),
+  no_coord_stocks$stock_0_30_kg_m2[no_coord_stocks$core_id=="Ottawa-A"]==9)
+bad_carbon <- flat; bad_carbon$organic_carbon_pct[1] <- NA_real_
+expect_error(read_flat(bad_carbon))
+bad_density <- flat; bad_density$bulk_density_g_cm3[1] <- "unknown"
+expect_error(read_flat(bad_density))
+optional_ids <- flat; optional_ids$sample_id <- paste0("sample-",1:4)
+optional_ids$plot_id <- c("plot-A","plot-A","plot-B","plot-C")
+with_ids <- read_flat(optional_ids)
+stopifnot(identical(with_ids$layers$section_id,optional_ids$sample_id[order(optional_ids$core_id,optional_ids$top_cm)]))
+optional_ids$sample_id[2] <- optional_ids$sample_id[1]
+expect_error(read_flat(optional_ids))
+unlink(flat_path)
+
+# The simplified template reproduces all four corrected example stocks.
+if (file.exists("data/input/field_data_template.csv")) {
+  template <- import_core_workbook("data/input/field_data_template.csv")
+  stopifnot(nrow(template$layers)==29,nrow(template$cores)==4)
+  original <- import_core_workbook("data/input/community_cores.xlsm",.09)
+  original_stocks <- calculate_core_stocks(original$layers,original$cores)$cores
+  template_stocks <- calculate_core_stocks(template$layers,template$cores)$cores
+  compare_columns <- setdiff(names(original_stocks),"plot_id")
+  stopifnot(isTRUE(all.equal(original_stocks[compare_columns],template_stocks[compare_columns],tolerance=1e-10,
+    check.attributes=FALSE)))
+}
+message("Simple field table checks passed: named columns, arbitrary IDs/habitats, core metadata, missing coordinates, required measurements and example reconciliation.")

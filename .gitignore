@@ -6,3 +6,6 @@ outputs/R_session.txt
 outputs/**/R_session.txt
 *.zip
 data/private/
+data/input/my_*
+data/aoi/my_*
+outputs/my_data/

@@ -1,48 +1,40 @@
-
 # Community Carbon Stock Analysis and Mapping
 
-Use soil measurements to calculate carbon stocks, compare them with other datasets, map an area, and try a simple Bayesian update.
+Turn a soil field sheet into carbon-stock tables, depth profiles and a simple map.
 
-[Follow the workshop](docs/workshop.md) · [See the input/output chain](docs/data-flow.md) · [Explainer Google Doc](https://docs.google.com/document/d/1qflFw6CH69feNRr87Oi1SbHl0sY5bcXb-TuFI6KUtaU/edit) · [Download ZIP](https://github.com/CathalD/Community_Carbon_Analysis_and_Mapping/archive/refs/heads/workshop-mvp.zip)
+**Start with the supplied example. Then use your own measurements and area boundary.** The same steps work with a local study area in Canada when you supply suitable data.
 
-![Carbon measured down the example cores](outputs/part1/depth_profiles.png)
+[Start here: every file and command](docs/start_here.md) · [Workshop: figures and code](docs/workshop.md) · [Explainer Google Doc](https://docs.google.com/document/d/1qflFw6CH69feNRr87Oi1SbHl0sY5bcXb-TuFI6KUtaU/edit)
 
-[Your figure caption]
+## Download and run the example
 
-## Download and run in R
-
-Install R and RStudio, then paste:
+In R or RStudio, paste:
 
 ```r
-install.packages("usethis")  # Once only.
+install.packages("usethis") # Once only.
 usethis::use_course(
   "https://github.com/CathalD/Community_Carbon_Analysis_and_Mapping/archive/refs/heads/workshop-mvp.zip"
 )
 ```
 
-Open the downloaded R project if it does not open automatically. Run:
+Open `Community_Carbon_Analysis_and_Mapping.Rproj` in the downloaded folder. Paste this into the **Console**:
 
 ```r
-source("00_setup.R")
-source("run_all.R")
+source("run_example.R")
 ```
 
-Setup installs `readxl`, `ggplot2`, `sf` and `terra`. Installing `sf` or `terra` may require system libraries on some computers. Figures and tables are saved in `outputs/`. Copyable code directly below each workshop figure creates or inspects its outputs and opens the exact image. Run the earlier steps first; the [input/output chain](docs/data-flow.md) shows the dependencies. `view_figure()` opens a saved image in your browser or image viewer; it does not refresh the analysis. The full course saves outputs without opening every image.
+`source()` runs the saved R script. The script installs missing packages, reads the example workbook and makes five figures. Find them in `outputs/example/`. The first run needs internet access to install packages.
 
-This review download uses the `workshop-mvp` branch. After it is merged, the default-branch shortcut will be:
+## Use your data
+
+1. Copy `data/input/field_data_template.csv` to `data/input/my_field_data.csv`. Open it in a spreadsheet program, replace **all** example rows, keep the eight column headers, and save as CSV.
+2. Save your study boundary as `data/aoi/my_aoi.geojson`.
+3. Run:
 
 ```r
-usethis::use_course("CathalD/Community_Carbon_Analysis_and_Mapping")
+source("run_my_data.R")
 ```
 
-## Work through the course
+Your tables and five figures go to `outputs/my_data/`. The [start guide](docs/start_here.md) explains the columns, boundary and output files. The [workshop](docs/workshop.md) has code directly below each figure.
 
-1. [Field measurements, stocks and reference comparisons](docs/workshop.md#part-1-field-based-analysis)
-2. [Area totals, interpolation and landscape modelling](docs/workshop.md#part-2-area-based-carbon-stock-analysis)
-3. [Bayesian updating](docs/workshop.md#part-3-bayesian-updating-of-prior-maps)
-
-The workbook contains revised illustrative data. Locations, ecosystem areas, landscape predictors and the Bayesian prior are conceptual examples. Reference comparisons use precomputed summaries from five SOD collections; the course recalculates your comparisons and figures. [Source details](SOURCES.md).
-
-To substitute your workbook, change `workbook_path` in `config.R` and set `density_override_J7 = NA_real_`. The supplied example's confirmed J7 correction is applied during import; its workbook remains unchanged. Review `outputs/part1/qc_flags.csv` before interpreting results.
-
-The download uses [`usethis::use_course()`](https://usethis.r-lib.org/reference/zip-utils.html). Run `source("tests/run_checks.R")` after the course to check calculations and outputs. Course code is [MIT licensed](LICENSE); third-party sources retain their own terms.
+Reference comparisons, ecosystem totals, landscape models and Bayesian updating are [optional extensions](docs/workshop.md#optional-full-illustrative-course). Course code is [MIT licensed](LICENSE); see [source details](SOURCES.md) for third-party data.

@@ -1,6 +1,7 @@
 # Run the full course first, then these focused mathematical and data checks.
 source("tests/check_field.R")
 source("tests/check_spatial.R")
+source("tests/check_custom_area.R")
 core <- read.csv("outputs/part1/core_stocks.csv")
 own <- read.csv("outputs/part1/comparison/community_matched_depth_values.csv")
 stock <- subset(own, variable == "stock_kgm2" & interval == "0-30" & eligible)

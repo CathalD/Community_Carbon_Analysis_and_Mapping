@@ -13,6 +13,79 @@
     original_value=original_value,analysis_value=analysis_value)
 }
 
+.ecosystem_groups <- function(ecosystem) {
+  # Retain the example's two familiar groups. Other labels remain separate.
+  habitat <- trimws(tolower(ecosystem))
+  ifelse(habitat %in% c("bog","fen"), "Wetland cores",
+    ifelse(grepl("forest", habitat), "Forest cores", ecosystem))
+}
+
+.import_flat_field_data <- function(table, path, density_override_J7=NA_real_) {
+  if (length(density_override_J7)!=1 || !is.na(density_override_J7)) {
+    stop("The example-only J7 correction does not apply to a field table. Set density_override_J7 = NA_real_ in config.R.")
+  }
+  required <- c("core_id","ecosystem","latitude","longitude","top_cm","bottom_cm",
+    "bulk_density_g_cm3","organic_carbon_pct")
+  names(table) <- trimws(sub("^\ufeff", "", names(table)))
+  if (anyDuplicated(names(table))) stop("Field table column names must be unique.")
+  missing <- setdiff(required, names(table))
+  if (length(missing)) stop("Field table is missing columns: ",paste(missing,collapse=", "),
+    ". Keep the eight headers from data/input/field_data_template.csv.")
+  table <- as.data.frame(table, stringsAsFactors=FALSE)
+  table <- table[Reduce(`|`,lapply(table[required],.present)), , drop=FALSE]
+  if (!nrow(table)) stop("The field table has no sample rows.")
+  for (v in c("core_id","ecosystem")) {
+    table[[v]] <- trimws(as.character(table[[v]]))
+    if (any(!.present(table[[v]]))) stop("Each sample row needs ",v,".")
+  }
+  for (v in c("latitude","longitude","top_cm","bottom_cm","bulk_density_g_cm3","organic_carbon_pct")) {
+    raw <- table[[v]]; table[[v]] <- .number(raw)
+    coordinates <- v %in% c("latitude","longitude")
+    if (any(.present(raw) & !is.finite(table[[v]])) || (!coordinates && any(!is.finite(table[[v]])))) {
+      stop("Enter numbers in ",v,". Only latitude and longitude may be blank.")
+    }
+  }
+  if (any(is.finite(table$latitude) & abs(table$latitude)>90) ||
+      any(is.finite(table$longitude) & abs(table$longitude)>180)) {
+    stop("Coordinates must be WGS84 latitude/longitude in decimal degrees.")
+  }
+  if (!"plot_id" %in% names(table)) table$plot_id <- paste0("Plot-",table$core_id)
+  table$plot_id <- trimws(as.character(table$plot_id))
+  table$plot_id[!.present(table$plot_id)] <- paste0("Plot-",table$core_id[!.present(table$plot_id)])
+  if (!"sample_id" %in% names(table)) table$sample_id <- NA_character_
+  table$sample_id <- trimws(as.character(table$sample_id))
+  absent_sample <- !.present(table$sample_id)
+  table$sample_id[absent_sample] <- paste0(table$core_id[absent_sample],"-row-",which(absent_sample))
+  for (z in split(table, table$core_id)) {
+    for (v in c("ecosystem","latitude","longitude","plot_id")) {
+      if (length(unique(z[[v]]))!=1) stop("Core ",z$core_id[1]," has inconsistent ",v,
+        ". Repeat the same core details on every slice row.")
+    }
+  }
+  layers <- data.frame(core_id=table$core_id,section_id=table$sample_id,plot_id=table$plot_id,
+    top_cm=table$top_cm,bottom_cm=table$bottom_cm,bd_g_cm3=table$bulk_density_g_cm3,
+    carbon_used_pct=table$organic_carbon_pct,carbon_basis="Entered organic carbon",
+    ecosystem=table$ecosystem,group=.ecosystem_groups(table$ecosystem),
+    excel_row=seq_len(nrow(table))+1L,stringsAsFactors=FALSE)
+  validate_core_layers(layers)
+  first <- !duplicated(table$core_id)
+  cores <- data.frame(core_id=table$core_id[first],plot_id=table$plot_id[first],
+    ecosystem=table$ecosystem[first],group=.ecosystem_groups(table$ecosystem[first]),
+    latitude=table$latitude[first],longitude=table$longitude[first],
+    cached_stock=NA_real_,stringsAsFactors=FALSE)
+  qc <- .empty_qc()
+  for (z in split(layers,layers$core_id)) {
+    if (!complete_depth_window(z,max(z$bottom_cm))) qc <- rbind(qc,.qc_row(z$core_id[1],
+      check="profile_gaps",message="Profile has missing surface coverage or gaps. Sampled stocks sum entered sections; fixed-depth stocks require complete coverage."))
+  }
+  for (i in which(!is.finite(cores$latitude) | !is.finite(cores$longitude))) qc <- rbind(qc,.qc_row(cores$core_id[i],
+    check="missing_coordinates",message="Coordinates are missing. Stocks can be calculated; this core cannot be mapped."))
+  layers <- layers[order(layers$core_id,layers$top_cm), , drop=FALSE]
+  rownames(layers) <- NULL
+  list(layers=layers,cores=cores,plots=unique(cores[c("plot_id","ecosystem","latitude","longitude")]),
+    qc=qc,source=normalizePath(path),depth_datum="surface")
+}
+
 validate_core_layers <- function(layers) {
   required <- c("core_id","section_id","top_cm","bottom_cm","bd_g_cm3","carbon_used_pct")
   if (!all(required %in% names(layers)) || !nrow(layers)) stop("No complete section input table supplied.")
@@ -53,8 +126,20 @@ validate_example_density_override <- function(layers,override) {
 }
 
 import_core_workbook <- function(path, density_override_J7=NA_real_) {
+  if (!file.exists(path)) stop("Field data file not found: ", path)
+  extension <- tolower(tools::file_ext(path))
+  if (extension=="csv") {
+    table <- utils::read.csv(path,colClasses="character",check.names=FALSE,
+      stringsAsFactors=FALSE,na.strings=c("","NA"))
+    return(.import_flat_field_data(table,path,density_override_J7))
+  }
+  if (!extension %in% c("xlsx","xlsm")) stop("Use a .csv, .xlsx or .xlsm field data file.")
   if (!requireNamespace("readxl", quietly=TRUE)) stop("Install readxl first.")
-  if (!file.exists(path)) stop("Workbook not found: ", path)
+  legacy_sheets <- c("3. Peat Data","2. Core Log","1. Plot & Site Log","7. Settings")
+  if (!all(legacy_sheets %in% readxl::excel_sheets(path))) {
+    table <- readxl::read_excel(path,sheet=1,col_types="text",.name_repair="minimal")
+    return(.import_flat_field_data(table,path,density_override_J7))
+  }
   read_inputs <- function(sheet, columns) {
     x <- as.data.frame(readxl::read_excel(path, sheet=sheet, skip=3,
       col_types="text", .name_repair="minimal"), stringsAsFactors=FALSE)
@@ -128,14 +213,19 @@ import_core_workbook <- function(path, density_override_J7=NA_real_) {
   site_ecosystems <- c("SIM-BOG"="Bog","SIM-FEN"="Fen",
     "SIM-FOREST-A"="Upland conifer forest","SIM-FOREST-B"="Upland mixed forest")
   log$ecosystem <- unname(site_ecosystems[log$site_id])
+  entered_ecosystem <- trimws(as.character(log$wetland_type))
+  has_ecosystem <- .present(entered_ecosystem)
+  # The supplied forest sites use the template's generic wetland type "Other".
+  # Retain their explicit site labels, while preserving other user-entered labels.
+  generic_example <- has_ecosystem & tolower(entered_ecosystem)=="other" &
+    log$site_id %in% c("SIM-FOREST-A","SIM-FOREST-B")
+  has_ecosystem[generic_example] <- FALSE
+  log$ecosystem[has_ecosystem] <- entered_ecosystem[has_ecosystem]
   habitat <- trimws(tolower(ifelse(is.na(log$wetland_type),"",log$wetland_type)))
   log$ecosystem[habitat=="bog"] <- "Bog"
   log$ecosystem[habitat=="fen"] <- "Fen"
-  explicit_forest <- habitat %in% c("forest","upland forest","conifer forest","mixed forest")
-  log$ecosystem[explicit_forest] <- log$wetland_type[explicit_forest]
   log$ecosystem[is.na(log$ecosystem)] <- "Not recorded"
-  log$group <- ifelse(log$ecosystem %in% c("Bog","Fen"),"Wetland cores",
-    ifelse(grepl("forest",log$ecosystem,ignore.case=TRUE),"Forest cores","Other cores"))
+  log$group <- .ecosystem_groups(log$ecosystem)
   soil$ecosystem <- log$ecosystem[match(soil$core_id,log$core_id)]
   soil$group <- log$group[match(soil$core_id,log$core_id)]
   for (i in seq_len(nrow(soil))) {
