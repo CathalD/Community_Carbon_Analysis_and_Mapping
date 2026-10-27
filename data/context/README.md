@@ -1,0 +1,7 @@
+# Offline geographic context
+
+`north_america.gpkg` contains Natural Earth 1:50 million countries (coastline and national boundaries), lakes, named marine areas and populated places, clipped to 170–40° W and 35–88° N. Maps run offline. No API key or imagery service is needed. Coarse context is not a surveyed local boundary, ecosystem map or predictor. Small rivers and settlements may be absent.
+
+Source: [Natural Earth vector release repository](https://github.com/nvkelso/natural-earth-vector), accessed 26 October 2026. Files: `ne_50m_admin_0_countries`, `ne_50m_lakes`, `ne_50m_geography_marine_polys`, `ne_50m_populated_places_simple`. [Terms: public domain](https://www.naturalearthdata.com/about/terms-of-use/). Figure credit: “Made with Natural Earth”. `source_checksums.csv` records source bytes. `tools/cache_context.R` refreshes the cache; this optional maintainer step requires a network connection.
+
+Main maps share an AOI-centred Lambert azimuthal equal-area projection and padded extent. Longitude/latitude ticks, approximate projected scale and a Canada locator are supplied. `location_map.png` shows a wider region and geographic labels. For continental AOIs, distances are distorted; the code warns. Use regional analysis domains for scientific interpolation. Do not treat the coarse land boundary as a land-only carbon mask: the supplied AOI defines the analytical mask and may require water exclusions in real work.

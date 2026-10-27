@@ -1,0 +1,4 @@
+"stage","area_weighted_mean_kg_m2","total_stock_0_30_t_C","cell_sd_kg_m2","interpretation"
+"Prior",11.9814572785428,4193509.78544119,5,"Illustrative cell-level uncertainty; not an uncertainty interval for the AOI total"
+"New estimate",18.2856539469766,6399978.48151271,3,"Illustrative cell-level uncertainty; not an uncertainty interval for the AOI total"
+"Updated",16.6168960053323,5815913.23843495,2.57247877713763,"Illustrative cell-level uncertainty; not an uncertainty interval for the AOI total"

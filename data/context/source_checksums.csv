@@ -1,0 +1,5 @@
+source,url,md5
+ne_50m_admin_0_countries.geojson,https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson,686def4ba546d1008ab4a75db581a81a
+ne_50m_lakes.geojson,https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_lakes.geojson,4424f18f735ddcb46066b0b17fd095ee
+ne_50m_geography_marine_polys.geojson,https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_geography_marine_polys.geojson,4a70ab14e635d88aa8f33b348fa82bca
+ne_50m_populated_places_simple.geojson,https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_populated_places_simple.geojson,90f659a9d20bc4b39753f23618cbcf5a

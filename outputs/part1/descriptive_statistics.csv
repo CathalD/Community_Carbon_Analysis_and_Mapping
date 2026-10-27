@@ -1,0 +1,7 @@
+"aggregation","group","carbon_pool","depth_cm","n_cores","mean_kg_m2","sample_sd_kg_m2","cv_pct","mean_t_ha","sample_sd_t_ha","data_origin"
+"group","Forest cores","Soil organic carbon","0-30",2,25.0080375,14.4112936986693,57.6266478274005,250.080375,144.112936986693,"Revised illustrative data"
+"group","Wetland cores","Soil organic carbon","0-30",2,11.56765,1.5977643406335,13.8123503099895,115.6765,15.977643406335,"Revised illustrative data"
+"ecosystem","Bog","Soil organic carbon","0-30",1,10.43786,,,104.3786,,"Revised illustrative data"
+"ecosystem","Fen","Soil organic carbon","0-30",1,12.69744,,,126.9744,,"Revised illustrative data"
+"ecosystem","Upland conifer forest","Soil organic carbon","0-30",1,14.817714,,,148.17714,,"Revised illustrative data"
+"ecosystem","Upland mixed forest","Soil organic carbon","0-30",1,35.198361,,,351.98361,,"Revised illustrative data"

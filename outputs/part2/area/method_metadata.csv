@@ -1,0 +1,2 @@
+"method","formula","packages","assumptions"
+"Hypothetical nearest-core ecosystem areas; group mean upscaling","Total t C = sum(cell area m2 * group mean kg C/m2)/1000","sf; terra; ggplot2; base R","Ecosystems are invented nearest-core zones, not mapped land cover. Four illustrative cores represent whole groups by assumption. Common depth 0–30 cm. Clipped cell areas exactly cover AOI; GeoTIFF boundary pixels are whole cells. No uncertainty or inventory accuracy is inferred."
