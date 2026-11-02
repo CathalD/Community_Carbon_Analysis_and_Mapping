@@ -1,0 +1,75 @@
+Workbook headers using Script 1 skip=2: TRUE 
+Workbook valid sections: 44 
+AOI valid: TRUE 
+Cores inside AOI: 6 / 6 
+AOI area EPSG3978 km2: 13672.61 
+Unique core IDs: 6 
+Depth 30 complete profiles: 6 mean of supplied stocks: 14.185 kg C/m2
+Depth 50 complete profiles: 4 mean of supplied stocks: 22.53167 kg C/m2
+Depth 100 complete profiles: 2 mean of supplied stocks: 36.43833 kg C/m2
+Topography bands: elevation_m 
+Topography resolution: 250 250 
+Nonmissing elevation at cores: 6 
+      core_id elevation_m
+1 AOI-SIM-C01    387.2098
+2 AOI-SIM-C02    370.0739
+3 AOI-SIM-C03    397.9869
+4 AOI-SIM-C04    349.1095
+5 AOI-SIM-C05    339.7198
+6 AOI-SIM-C06    382.2478
+IDW and prior grids align: TRUE 
+Prior values at cores:
+  McMaster_WWFCanada_soil_carbon1m_250m_kg-m2_version3.0
+1                                               18.50505
+2                                               14.34719
+3                                               11.04409
+4                                               14.17529
+5                                               19.97972
+6                                               15.08304
+  McMaster_WWFCanada_soil_carbon1m_uncertainty_250m_kg-m2_version3.0
+1                                                          17.197409
+2                                                           9.302021
+3                                                           9.859611
+4                                                           9.228180
+5                                                          11.474881
+6                                                          10.824366
+Syntax parsing:
+Map_helper.R OK 6 top-level expressions
+Scrip_3.R OK 87 top-level expressions
+Script_1.R OK 35 top-level expressions
+Script_2.R OK 171 top-level expressions
+Script_4.R OK 80 top-level expressions
+Script_5.R OK 138 top-level expressions
+IDW uncertainty assignment parsed as:
+values(idw_uncertainty) <- idw_cv <- (idw_uncertainty/idw_0_100) * 
+    100
+
+Software:
+R version 4.6.0 (2026-04-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Sequoia 15.6.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: America/Toronto
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] readxl_1.5.0 terra_1.9-27 sf_1.1-1    
+
+loaded via a namespace (and not attached):
+ [1] s2_1.1.9           codetools_0.2-20   cellranger_1.1.0   magrittr_2.0.5    
+ [5] e1071_1.7-17       glue_1.8.1         KernSmooth_2.23-26 tibble_3.3.1      
+ [9] pkgconfig_2.0.3    wk_0.9.5           lifecycle_1.0.5    classInt_0.4-11   
+[13] cli_3.6.6          vctrs_0.7.3        grid_4.6.0         DBI_1.3.0         
+[17] proxy_0.4-29       class_7.3-23       compiler_4.6.0     tools_4.6.0       
+[21] pillar_1.11.1      Rcpp_1.1.1-1.1     otel_0.2.0         rlang_1.2.0       
+[25] units_1.0-1       

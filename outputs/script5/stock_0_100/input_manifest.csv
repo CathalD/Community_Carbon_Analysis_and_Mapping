@@ -1,0 +1,6 @@
+input,path,md5
+field,outputs/script1/mapping_data.csv,513b1d78c0d97f37890af32b72e8d4aa
+boundary,data/boundary/aoi.geojson,b47824f059b9a47d9d61ff1cd03107c2
+prior_mean,outputs/script4/mcmaster_0_100cm.tif,71c5771762fd780ca55bbb4834d3e883
+prior_uncertainty,outputs/script4/mcmaster_uncertainty_0_100cm.tif,e011e82ae94370339b2d502b010e6769
+grid,outputs/script2/idw_0_100cm.tif,ff8a54da78d6c234307754e4bc861090

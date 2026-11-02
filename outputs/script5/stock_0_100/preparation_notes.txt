@@ -1,0 +1,8 @@
+Stock units: kg C/m2.
+Prior uncertainty input: Q95 minus Q05.
+Working SD: interval width / (2 * qnorm(0.95)).
+The SD conversion assumes a normal-shaped interval.
+The supplied prior rasters have already been resampled.
+Working prior spread is approximate for this demonstration.
+Grid values do not establish uncertainty for block averages.
+Field stocks retain the definitions established in Script 1.

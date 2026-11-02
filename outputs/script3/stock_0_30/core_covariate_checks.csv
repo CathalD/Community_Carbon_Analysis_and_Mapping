@@ -1,0 +1,10 @@
+predictor,missing_cores,distinct_values
+elevation_m,0,6
+slope_deg,0,6
+aspect_deg,0,6
+tpi_m,0,6
+tri_m,0,6
+northness,0,6
+eastness,0,6
+water_occurrence_pct,0,1
+distance_to_water_m,0,5

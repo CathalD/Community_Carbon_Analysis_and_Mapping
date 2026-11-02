@@ -1,0 +1,61 @@
+dataset,interval,variable,eligible_profiles
+Janousek,0-30,stock_kgm2,1233
+Janousek,0-30,soc_gkg,1233
+Janousek,0-30,bd,1233
+Janousek,0-50,stock_kgm2,1008
+Janousek,0-50,soc_gkg,1008
+Janousek,0-50,bd,1008
+Janousek,0-100,stock_kgm2,676
+Janousek,0-100,soc_gkg,676
+Janousek,0-100,bd,677
+Janousek,total,stock_kgm2,1225
+Janousek,total,soc_gkg,1225
+Janousek,total,bd,1226
+NPDB,0-30,stock_kgm2,340
+NPDB,0-30,soc_gkg,4611
+NPDB,0-30,bd,390
+NPDB,0-50,stock_kgm2,251
+NPDB,0-50,soc_gkg,3738
+NPDB,0-50,bd,320
+NPDB,0-100,stock_kgm2,161
+NPDB,0-100,soc_gkg,2515
+NPDB,0-100,bd,243
+NPDB,total,stock_kgm2,171
+NPDB,total,soc_gkg,2689
+NPDB,total,bd,256
+NRCan peat,0-30,stock_kgm2,1211
+NRCan peat,0-30,soc_gkg,1211
+NRCan peat,0-30,bd,1211
+NRCan peat,0-50,stock_kgm2,1208
+NRCan peat,0-50,soc_gkg,1208
+NRCan peat,0-50,bd,1209
+NRCan peat,0-100,stock_kgm2,1165
+NRCan peat,0-100,soc_gkg,1165
+NRCan peat,0-100,bd,1166
+NRCan peat,total,stock_kgm2,1172
+NRCan peat,total,soc_gkg,1172
+NRCan peat,total,bd,1173
+Riley,0-30,stock_kgm2,0
+Riley,0-30,soc_gkg,263
+Riley,0-30,bd,0
+Riley,0-50,stock_kgm2,0
+Riley,0-50,soc_gkg,260
+Riley,0-50,bd,0
+Riley,0-100,stock_kgm2,0
+Riley,0-100,soc_gkg,255
+Riley,0-100,bd,0
+Riley,total,stock_kgm2,0
+Riley,total,soc_gkg,262
+Riley,total,bd,0
+WoSIS,0-30,stock_kgm2,14
+WoSIS,0-30,soc_gkg,7214
+WoSIS,0-30,bd,17
+WoSIS,0-50,stock_kgm2,14
+WoSIS,0-50,soc_gkg,7041
+WoSIS,0-50,bd,16
+WoSIS,0-100,stock_kgm2,14
+WoSIS,0-100,soc_gkg,6143
+WoSIS,0-100,bd,14
+WoSIS,total,stock_kgm2,15
+WoSIS,total,soc_gkg,8230
+WoSIS,total,bd,15

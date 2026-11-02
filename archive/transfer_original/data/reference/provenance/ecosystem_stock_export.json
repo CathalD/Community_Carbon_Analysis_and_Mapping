@@ -1,0 +1,19 @@
+{
+  "source": "/Users/cathaldoherty/Desktop/Community_Carbon_Analysis_and_Mapping-Transfer_Oct/Transfer_Oct29/data/reference/reference_depth_values.csv.gz",
+  "source_sha256": "d1bb2eaad568c9d1142268f39b7eb1e315d78142da4551e016e09dbd1313d03d",
+  "output_file": "ecosystem_carbon_stocks.csv",
+  "output_sha256": "12eed1f178d801e41167ca3a96f9c64e7c77830385cb94d7448c97104dd88a8f",
+  "rows": 9878,
+  "columns": 21,
+  "counts_by_interval": {
+    "0-30": 2798,
+    "total": 2583,
+    "0-50": 2481,
+    "0-100": 2016
+  },
+  "missing_ecosystem_rows": 980,
+  "plotted_rows": 8898,
+  "changes": "Selected stock records; renamed value to stock_kg_m2; no stock, interval, ecosystem or depth values changed",
+  "field_overlay": "Not included: simulated field habitats remain Other/unverified",
+  "source_collection_note": "Riley has no eligible stock values because its density units remain unverified."
+}

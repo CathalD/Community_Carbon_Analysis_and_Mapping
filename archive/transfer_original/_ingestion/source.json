@@ -1,0 +1,28 @@
+{
+  "repository": "https://github.com/CathalD/Community_Carbon_Analysis_and_Mapping",
+  "branch": "Transfer_Oct",
+  "commit": "8533ac27a098e0e0d1e09b560cabe0038c80c7f3",
+  "source_folder": "Transfer_OCT_29",
+  "source_file_count": 30,
+  "source_bytes": 4811092,
+  "ingested_date": "2026-10-30",
+  "destination": "/Users/cathaldoherty/Desktop/Community_Carbon_Analysis_and_Mapping-Transfer_Oct/Transfer_Oct29",
+  "supplementary_files": [
+    {
+      "source_path": "GEE_Raster_Exports.ipynb",
+      "local_path": "_ingestion/reference_inputs/GEE_Raster_Exports.ipynb",
+      "sha256": "ed6b3ec7f94df43a8a03316ccd0e015188b273a200b5ef9694aa325c697c34b7",
+      "bytes": 2680353
+    },
+    {
+      "source_path": "Transfer_Oct/community_carbon_outputs_updated.xlsm",
+      "local_path": "_ingestion/reference_inputs/community_carbon_outputs_updated.xlsm",
+      "sha256": "fe8e918a8013fa665fe50d9d82f5bbf4e48504a0b3bee303340d4cc81f26eba3",
+      "bytes": 431007
+    }
+  ],
+  "overview_attachment": "/Users/cathaldoherty/.codex/attachments/a2e0e767-4566-4f75-9ede-87fda8e706cd/Pasted text.txt",
+  "overview_sha256": "ddcf45f05b05ea46029ad287be6b8f695454638dc3d8da3dd52c46f4cb9346da",
+  "source_scripts_modified": false,
+  "full_workflow_executed": false
+}

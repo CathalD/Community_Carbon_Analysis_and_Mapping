@@ -1,0 +1,13 @@
+# A tibble: 6 × 9
+  `Core ID`   `Total Sections` `Max Depth (cm)` `Avg Bulk Density`
+  <chr>                  <dbl>            <dbl>              <dbl>
+1 AOI-SIM-C01                3               30               0.09
+2 AOI-SIM-C02                5               45               0.1 
+3 AOI-SIM-C03                6               60               0.1 
+4 AOI-SIM-C04                8               80               0.11
+5 AOI-SIM-C05               10              100               0.12
+6 AOI-SIM-C06               12              120               0.13
+# ℹ 5 more variables: `Avg Carbon (%)` <dbl>, `C Stock 0-30cm` <dbl>,
+#   `C Stock 0-50cm` <dbl>, `C Stock 0-100cm` <dbl>, `Total Carbon Stock` <dbl>
+
+PASS: overlap calculation, exact thresholds, shallow exclusions, missing/gapped/overlapping sections, six-core example, reference spot checks, and comparison figure.
