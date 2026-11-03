@@ -1,0 +1,9 @@
+package,version
+terra,1.9.27
+gstat,2.1.6
+geoR,1.9.6
+mvtnorm,1.4.2
+sp,2.2.1
+sf,1.1.1
+readr,2.2.0
+ggplot2,4.0.3

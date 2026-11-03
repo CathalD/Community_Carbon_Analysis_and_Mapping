@@ -1,0 +1,5 @@
+method,package,error_source,working_error_value,error_units,range_m,inference,intervals
+raw_cores,gstat,Fixed observation log-SD,0,log-stock SD,2000,Spatial Gaussian conditioning,Pointwise latent-stock intervals conditional on fixed assumptions
+raw_cores_geoR,geoR,Fixed observation log-SD,0,log-stock SD,2000,Spatial Gaussian conditioning; fixed parameters,Pointwise latent-stock intervals conditional on fixed assumptions
+area_based,mvtnorm,Between-core SD,19.052540425535557,kg C/m²,NA,Approximate marginal map fusion,Pointwise latent-stock intervals conditional on fixed assumptions
+idw,gstat + mvtnorm,Held-out plot RMSE; IDW settings fixed,9.305307151992622,kg C/m²,NA,Approximate marginal map fusion,Pointwise latent-stock intervals conditional on fixed assumptions

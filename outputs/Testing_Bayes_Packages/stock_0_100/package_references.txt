@@ -1,0 +1,52 @@
+To cite package gstat in publications use:
+
+  Pebesma, E.J., 2004. Multivariable geostatistics in S: the gstat
+  package. Computers & Geosciences, 30: 683-691.
+
+  Benedikt Gräler, Edzer Pebesma and Gerard Heuvelink, 2016.
+  Spatio-Temporal Interpolation using gstat.  The R Journal 8(1),
+  204-218
+
+To see these entries in BibTeX format, use 'print(<citation>,
+bibtex=TRUE)', 'toBibtex(.)', or set
+'options(citation.bibtex.max=999)'.
+
+To cite package ‘geoR’ in publications use:
+
+  Ribeiro Jr PJ, Diggle P (2025). _geoR: Analysis of Geostatistical
+  Data_. doi:10.32614/CRAN.package.geoR
+  <https://doi.org/10.32614/CRAN.package.geoR>. R package version
+  1.9-6, <https://CRAN.R-project.org/package=geoR>.
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {geoR: Analysis of Geostatistical Data},
+    author = {Paulo Justiniano {Ribeiro Jr} and Peter Diggle},
+    year = {2025},
+    note = {R package version 1.9-6},
+    url = {https://CRAN.R-project.org/package=geoR},
+    doi = {10.32614/CRAN.package.geoR},
+  }
+
+To cite package ‘mvtnorm’ in publications use:
+
+  Genz A, Bretz F (2009). _Computation of Multivariate Normal and t
+  Probabilities_, series Lecture Notes in Statistics. Springer-Verlag,
+  Heidelberg. ISBN 978-3-642-01688-2.
+
+A BibTeX entry for LaTeX users is
+
+  @Book{,
+    title = {Computation of Multivariate Normal and t Probabilities},
+    author = {Alan Genz and Frank Bretz},
+    series = {Lecture Notes in Statistics},
+    year = {2009},
+    publisher = {Springer-Verlag},
+    address = {Heidelberg},
+    isbn = {978-3-642-01688-2},
+  }
+
+geoR Bayesian kriging: https://search.r-project.org/CRAN/refmans/geoR/html/krige.bayes.html
+mvtnorm package background: https://journal.r-project.org/articles/RJ-2009-001/
+Conditional-normal API: https://search.r-project.org/CRAN/refmans/mvtnorm/html/margcond.html
