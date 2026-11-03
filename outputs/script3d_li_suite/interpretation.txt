@@ -1,0 +1,7 @@
+Contact mode: all_eight_layer_evidence
+All field contact labels are reconstructed from raw measured layers and explicit contacts; no Route L model outputs are sourced.
+Four local method branches: raw measured points; area mean; workshop-tuned IDW; workshop AICc-selected regression.
+Zeros remain exact zero labels; negative regression extrapolations are retained and flagged, not silently clamped.
+Area/IDW/regression local maps do not themselves constitute Li prior updates.
+Confirmed versus layer-classified evidence remains distinct throughout.
+Current classification labels are exploratory; tuning and model selection do not provide independent-site validation.

@@ -1,0 +1,9 @@
+plot_id,longitude,latitude,observed,observed_units,depth_basis,coverage_flag
+PM-01-A,-87.679780,56.098575,3.058,kg C/m2,0-30 cm,PARTIAL — core stops at 14.5 cm; 0–30 cm stock covers only 48% of the interval
+PM-02-A,-87.650640,56.099636,3.083,kg C/m2,0-30 cm,PARTIAL — core stops at 20.7 cm; 0–30 cm stock covers only 69% of the interval
+PM-03-A,-87.678390,56.110356,10.017,kg C/m2,0-30 cm,full 0–30 cm coverage
+FS-05,-87.756220,56.079389,6.105,kg C/m2,0-30 cm,full 0–30 cm coverage
+FS-04,-87.795560,56.074278,8.759,kg C/m2,0-30 cm,full 0–30 cm coverage
+FS-03,-87.871810,56.128917,4.222,kg C/m2,0-30 cm,full 0–30 cm coverage
+FS-02,-87.628250,55.992611,8.382,kg C/m2,0-30 cm,full 0–30 cm coverage
+FS-01,-87.628200,55.965999,14.263,kg C/m2,0-30 cm,full 0–30 cm coverage

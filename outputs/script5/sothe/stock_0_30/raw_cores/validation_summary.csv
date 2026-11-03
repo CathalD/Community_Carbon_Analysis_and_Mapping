@@ -1,0 +1,2 @@
+n_cores,prior_RMSE,updated_RMSE,MAE,bias,conditional_interval_coverage,status
+8,32.824721359803355,19.329750447968497,15.062230059368538,14.945185770109942,0.875,Eight individual-core holdouts; uncertainty is an S100-derived S30 sensitivity proxy

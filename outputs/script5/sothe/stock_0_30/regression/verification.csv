@@ -1,0 +1,7 @@
+check,passed
+Every field core has a selected-model holdout,TRUE
+Posterior log variance nonnegative and no larger than prior,TRUE
+Precision and weight forms give identical posterior,TRUE
+Moment reconstruction matches mapped posterior mean,TRUE
+Finite positive posterior means and SDs,TRUE
+Intervals bracket posterior median,TRUE

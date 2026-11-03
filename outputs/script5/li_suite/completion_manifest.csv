@@ -1,0 +1,9 @@
+variable,method,local_evidence,update,completed,scale
+depth,raw_cores,outputs/script3d_li_suite/depth/raw_cores.csv,outputs/script5/li_suite/depth/raw_cores/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained
+depth,area_based,outputs/script3d_li_suite/depth/local_maps.tif,outputs/script5/li_suite/depth/area_based/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained
+depth,idw,outputs/script3d_li_suite/depth/local_maps.tif,outputs/script5/li_suite/depth/idw/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained
+depth,regression,outputs/script3d_li_suite/depth/local_maps.tif,outputs/script5/li_suite/depth/regression/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained
+carbon,raw_cores,outputs/script3d_li_suite/carbon/raw_cores.csv,outputs/script5/li_suite/carbon/raw_cores/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained
+carbon,area_based,outputs/script3d_li_suite/carbon/local_maps.tif,outputs/script5/li_suite/carbon/area_based/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained
+carbon,idw,outputs/script3d_li_suite/carbon/local_maps.tif,outputs/script5/li_suite/carbon/idw/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained
+carbon,regression,outputs/script3d_li_suite/carbon/local_maps.tif,outputs/script5/li_suite/carbon/regression/posterior_maps.tif,TRUE,Original-scale Gaussian; true zeros retained

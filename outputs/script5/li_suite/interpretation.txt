@@ -1,0 +1,10 @@
+Four branches were fitted and updated for each Li variable: raw cores, area average, IDW and regression.
+All eight FS inputs retain confirmed-versus-layer-classified contact labels; four zero depths/stocks are retained.
+Gaussian conditioning/fusion is applied on the original scale to handle true zeros; this differs from workshop lognormal stocks.
+Regression predictions below zero or missing are flagged and the prior is retained in those cells.
+Negative Gaussian posterior means are also flagged and left visible; no hidden clipping is performed.
+FS-02/FS-04 need audited paired-source-pixel prior extraction within 500 m. Valid zero-valued depth priors are preserved.
+Depth and carbon remain dependent marginal sensitivity analyses; they are not multiplied into a joint posterior.
+The fitted local carbon-depth curve is mapped from every updated depth only within measured depth support.
+Outer holdouts refit local models, IDW tuning, regression selection and working error scales using training cores only.
+Classification error, prior calibration, spatial range and whole-inventory uncertainty remain outside these conditional intervals.

@@ -1,0 +1,5 @@
+"method","n_cells","map_mean_kg_C_m2"
+"Sothe prior",3873,31.3878165473315
+"Spatial core update",3873,29.9754137255053
+"Area-based update",3873,13.1777155479074
+"IDW update",3873,13.9873921400235

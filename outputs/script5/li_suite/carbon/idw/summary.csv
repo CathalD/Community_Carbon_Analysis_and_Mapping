@@ -1,0 +1,2 @@
+variable,method,units,n_cores,confirmed_contacts,layer_estimated_contacts,zero_observations,prior_cells,update_applied_cells,prior_retained_cells,negative_posterior_mean_cells,mean_prior,mean_updated,prior_RMSE,nested_update_RMSE,nested_update_MAE,interval_coverage,working_error_sd,response_model,selected_regression
+carbon,idw,kg C/m2,8,2,6,4,3831,3831,0,0,64.1391923496664,1.284270188581969,56.08537709917333,4.191488323502711,3.8060249121846597,0.875,3.3682407606684537,Original-scale Gaussian sensitivity; ensemble spreads are not calibrated errors,NA

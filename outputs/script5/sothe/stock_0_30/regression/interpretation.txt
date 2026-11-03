@@ -1,0 +1,6 @@
+The regression branch uses the selected Script 3 map and the same pointwise fusion equations as workshop Script 5.
+Selected model: Mean_only
+A Mean_only selection remains an intercept-only regression; an environmental effect is not forced into the model.
+The holdout RMSE fixes the selected formula; it does not include nested model selection.
+This and the other three updates reuse the same eight cores and are alternative estimates, not independent evidence.
+The uncertainty is conditional on the cross-depth S100-to-S30 uncertainty proxy and working likelihood.

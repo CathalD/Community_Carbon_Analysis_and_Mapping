@@ -1,0 +1,33 @@
+method,core_id,observed,predicted,error,validation_type
+raw_cores,PM-01-A,3.0578035,NA,NA,Observed point data; no local prediction/validation
+raw_cores,PM-02-A,2.8534808,NA,NA,Observed point data; no local prediction/validation
+raw_cores,PM-03-A,10.1951898,NA,NA,Observed point data; no local prediction/validation
+raw_cores,FS-05,2.4037,NA,NA,Observed point data; no local prediction/validation
+raw_cores,FS-04,0,NA,NA,Observed point data; no local prediction/validation
+raw_cores,FS-03,0,NA,NA,Observed point data; no local prediction/validation
+raw_cores,FS-02,0,NA,NA,Observed point data; no local prediction/validation
+raw_cores,FS-01,0,NA,NA,Observed point data; no local prediction/validation
+area_based,PM-01-A,3.0578035,2.2074815142857145,-0.8503219857142854,Whole-core holdout area mean
+area_based,PM-02-A,2.8534808,2.236670471428572,-0.6168103285714279,Whole-core holdout area mean
+area_based,PM-03-A,10.1951898,1.1878549,-9.0073349,Whole-core holdout area mean
+area_based,FS-05,2.4037,2.3009248714285713,-0.1027751285714289,Whole-core holdout area mean
+area_based,FS-04,0,2.6443105857142855,2.6443105857142855,Whole-core holdout area mean
+area_based,FS-03,0,2.6443105857142855,2.6443105857142855,Whole-core holdout area mean
+area_based,FS-02,0,2.6443105857142855,2.6443105857142855,Whole-core holdout area mean
+area_based,FS-01,0,2.6443105857142855,2.6443105857142855,Whole-core holdout area mean
+idw,PM-01-A,3.0578035,6.8208867746182,3.7630832746181997,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+idw,PM-02-A,2.8534808,6.497960550057021,3.6444797500570214,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+idw,PM-03-A,10.1951898,2.967540292462375,-7.227649507537625,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+idw,FS-05,2.4037,1.2531378904894686,-1.1505621095105316,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+idw,FS-04,0,2.6415886131294504,2.6415886131294504,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+idw,FS-03,0,1.1534941514133885,1.1534941514133885,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+idw,FS-02,0,0.9473354624835032,0.9473354624835032,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+idw,FS-01,0,0.7407050599605907,0.7407050599605907,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)
+regression,PM-01-A,3.0578035,4.736865312489066,1.6790618124890657,Whole-core holdout for selected fixed model; AICc selection is not nested
+regression,PM-02-A,2.8534808,3.060192400186948,0.206711600186948,Whole-core holdout for selected fixed model; AICc selection is not nested
+regression,PM-03-A,10.1951898,3.787681035234526,-6.407508764765474,Whole-core holdout for selected fixed model; AICc selection is not nested
+regression,FS-05,2.4037,4.044285411597566,1.640585411597566,Whole-core holdout for selected fixed model; AICc selection is not nested
+regression,FS-04,0,-1.333202479096119,-1.333202479096119,Whole-core holdout for selected fixed model; AICc selection is not nested
+regression,FS-03,0,1.3875925452825335,1.3875925452825335,Whole-core holdout for selected fixed model; AICc selection is not nested
+regression,FS-02,0,-3.668710643161844,-3.668710643161844,Whole-core holdout for selected fixed model; AICc selection is not nested
+regression,FS-01,0,2.521279496055542,2.521279496055542,Whole-core holdout for selected fixed model; AICc selection is not nested

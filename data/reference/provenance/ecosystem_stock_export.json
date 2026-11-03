@@ -1,0 +1,8 @@
+{
+  "source": "data/reference/reference_depth_values.csv.gz",
+  "rows": 9878,
+  "source_sha256": "d1bb2eaad568c9d1142268f39b7eb1e315d78142da4551e016e09dbd1313d03d",
+  "output": "data/reference/ecosystem_carbon_stocks.csv",
+  "output_sha256": "12eed1f178d801e41167ca3a96f9c64e7c77830385cb94d7448c97104dd88a8f",
+  "operation": "Select stock values; preserve sources, ecosystems, depth groups and sampled depth flags"
+}

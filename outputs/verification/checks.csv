@@ -1,0 +1,13 @@
+"check","passed"
+"All eight FS cores included",TRUE
+"Measured stock integration to 30 cm / sampled bottom",TRUE
+"Measured stock integration to 50 cm / sampled bottom",TRUE
+"Measured stock integration to 100 cm / sampled bottom",TRUE
+"Shallow cores remain included in S30",TRUE
+"Sothe update uses all eight cores",TRUE
+"Finite Sothe posterior",TRUE
+"Nonnegative contracted Sothe log variance",TRUE
+"All 119 available covariate bands retained",TRUE
+"GP exact-observation conditioning",TRUE
+"Factored Li engine reproduces workshop Sothe baseline",TRUE
+"Four-method Sothe and Li suites verified",TRUE

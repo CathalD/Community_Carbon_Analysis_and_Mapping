@@ -1,0 +1,25 @@
+{
+  "depth_groups": [
+    "0-30",
+    "0-50",
+    "0-100",
+    "total"
+  ],
+  "datum": "surface",
+  "eligible_depth_rule": {
+    "0-30": "Reaches or exceeds 30 cm; capped at 30",
+    "0-50": "Extends beyond 30 cm; capped at 50 or sampled bottom",
+    "0-100": "Extends beyond 50 cm; capped at 100 or sampled bottom",
+    "total": "All sampled depths; valid measurements required"
+  },
+  "coverage_rule": "Continuous measured coverage; no gaps/overlaps beyond floating point tolerance",
+  "coverage_tolerance_cm": 1e-08,
+  "no_extrapolation": true,
+  "stock_method": "Source layer stock allocated by depth overlap",
+  "total_definition": "All continuous sampled material from recorded top to sampled bottom; not confirmed whole-soil-profile stock",
+  "source_profile_count": 20690,
+  "eligible_value_rows": 72171,
+  "invalid_source_profiles": 39,
+  "excluded_invalid_depth_rows": 3651,
+  "snapshot_date": "2026-10-30"
+}

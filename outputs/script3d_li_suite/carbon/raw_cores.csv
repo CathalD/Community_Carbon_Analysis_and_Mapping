@@ -1,0 +1,9 @@
+core_id,longitude,latitude,depth,carbon,peat_depth_cm,organic_carbon_kg_m2,evidence,confirmed,canfit,complete_organic_profile,zero_organic_depth,sampled_bottom_cm,contact_rule,contact_mode,response
+PM-01-A,-87.67978,56.098575,14.5,3.0578035,14.5,3.0578035,field_confirmed_contact,TRUE,TRUE,TRUE,FALSE,14.5,Core was sampled to mineral soil; organic-layer thickness confirmed at core bottom.,all_eight_layer_evidence,3.0578035
+PM-02-A,-87.65064,56.099636,15.2,2.8534808,15.2,2.8534808,layer_classified_contact,FALSE,TRUE,TRUE,FALSE,20.7,"First layer with SOC < 80 g/kg; boundary at its top; classification-derived, not field-confirmed",all_eight_layer_evidence,2.8534808
+PM-03-A,-87.67839,56.110356,30.73,10.1951898,30.73,10.1951898,field_confirmed_contact,TRUE,TRUE,TRUE,FALSE,30.73,Core was sampled to mineral soil; organic-layer thickness confirmed at core bottom.,all_eight_layer_evidence,10.1951898
+FS-05,-87.75622,56.079389,10,2.4037,10,2.4037,layer_classified_contact,FALSE,TRUE,TRUE,FALSE,30,"First layer with SOC < 80 g/kg; boundary at its top; classification-derived, not field-confirmed",all_eight_layer_evidence,2.4037
+FS-04,-87.79556,56.074278,0,0,0,0,layer_classified_contact,FALSE,TRUE,TRUE,TRUE,30,"First layer with SOC < 80 g/kg; boundary at its top; classification-derived, not field-confirmed",all_eight_layer_evidence,0
+FS-03,-87.87181,56.128917,0,0,0,0,layer_classified_contact,FALSE,TRUE,TRUE,TRUE,30,"First layer with SOC < 80 g/kg; boundary at its top; classification-derived, not field-confirmed",all_eight_layer_evidence,0
+FS-02,-87.62825,55.992611,0,0,0,0,layer_classified_contact,FALSE,TRUE,TRUE,TRUE,30,"First layer with SOC < 80 g/kg; boundary at its top; classification-derived, not field-confirmed",all_eight_layer_evidence,0
+FS-01,-87.6282,55.965999,0,0,0,0,layer_classified_contact,FALSE,TRUE,TRUE,TRUE,30,"First layer with SOC < 80 g/kg; boundary at its top; classification-derived, not field-confirmed",all_eight_layer_evidence,0

@@ -1,0 +1,3 @@
+model,n_cores,estimate,units,LOOCV_RMSE,status
+Peat depth mean,2,22.615,cm,16.23,Exploratory: only two confirmed peat contacts
+Cumulative carbon through zero,2,0.3097537069915032,kg C/m2 per cm,2.9044586834738726,Exploratory: only two confirmed peat contacts

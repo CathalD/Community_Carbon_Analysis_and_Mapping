@@ -1,0 +1,77 @@
+"check","passed"
+"All authorized Li observations retain distinct evidence labels",TRUE
+"Organic stocks independently close to raw layer integration",TRUE
+"All eight Li update branches exist",TRUE
+"depth raw_cores uses common prior cells",TRUE
+"depth raw_cores finite means, valid conditional variance and bounds",TRUE
+"depth raw_cores negative posterior flags match values",TRUE
+"depth raw_cores all eight cores and four zero responses retained",TRUE
+"raw_cores curve mapping stays within measured depth support depth",TRUE
+"depth area_based uses common prior cells",TRUE
+"depth area_based finite means, valid conditional variance and bounds",TRUE
+"depth area_based negative posterior flags match values",TRUE
+"depth area_based all eight cores and four zero responses retained",TRUE
+"depth area_based independent precision-form closure",TRUE
+"depth area_based unsupported local evidence retains prior",TRUE
+"depth area_based no negative local prediction used as evidence",TRUE
+"area_based curve mapping stays within measured depth support depth",TRUE
+"depth idw uses common prior cells",TRUE
+"depth idw finite means, valid conditional variance and bounds",TRUE
+"depth idw negative posterior flags match values",TRUE
+"depth idw all eight cores and four zero responses retained",TRUE
+"depth idw independent precision-form closure",TRUE
+"depth idw unsupported local evidence retains prior",TRUE
+"depth idw no negative local prediction used as evidence",TRUE
+"idw curve mapping stays within measured depth support depth",TRUE
+"depth regression uses common prior cells",TRUE
+"depth regression finite means, valid conditional variance and bounds",TRUE
+"depth regression negative posterior flags match values",TRUE
+"depth regression all eight cores and four zero responses retained",TRUE
+"depth regression independent precision-form closure",TRUE
+"depth regression unsupported local evidence retains prior",TRUE
+"depth regression no negative local prediction used as evidence",TRUE
+"regression curve mapping stays within measured depth support depth",TRUE
+"depth all four methods have eight complete outer holdouts",TRUE
+"depth nested model choices recorded per held-out core",TRUE
+"depth paired prior fallback bounded and all core priors finite",TRUE
+"carbon raw_cores uses common prior cells",TRUE
+"carbon raw_cores finite means, valid conditional variance and bounds",TRUE
+"carbon raw_cores negative posterior flags match values",TRUE
+"carbon raw_cores all eight cores and four zero responses retained",TRUE
+"raw_cores curve mapping stays within measured depth support carbon",TRUE
+"carbon area_based uses common prior cells",TRUE
+"carbon area_based finite means, valid conditional variance and bounds",TRUE
+"carbon area_based negative posterior flags match values",TRUE
+"carbon area_based all eight cores and four zero responses retained",TRUE
+"carbon area_based independent precision-form closure",TRUE
+"carbon area_based unsupported local evidence retains prior",TRUE
+"carbon area_based no negative local prediction used as evidence",TRUE
+"area_based curve mapping stays within measured depth support carbon",TRUE
+"carbon idw uses common prior cells",TRUE
+"carbon idw finite means, valid conditional variance and bounds",TRUE
+"carbon idw negative posterior flags match values",TRUE
+"carbon idw all eight cores and four zero responses retained",TRUE
+"carbon idw independent precision-form closure",TRUE
+"carbon idw unsupported local evidence retains prior",TRUE
+"carbon idw no negative local prediction used as evidence",TRUE
+"idw curve mapping stays within measured depth support carbon",TRUE
+"carbon regression uses common prior cells",TRUE
+"carbon regression finite means, valid conditional variance and bounds",TRUE
+"carbon regression negative posterior flags match values",TRUE
+"carbon regression all eight cores and four zero responses retained",TRUE
+"carbon regression independent precision-form closure",TRUE
+"carbon regression unsupported local evidence retains prior",TRUE
+"carbon regression no negative local prediction used as evidence",TRUE
+"regression curve mapping stays within measured depth support carbon",TRUE
+"carbon all four methods have eight complete outer holdouts",TRUE
+"carbon nested model choices recorded per held-out core",TRUE
+"carbon paired prior fallback bounded and all core priors finite",TRUE
+"Original-scale GP exactly conditions on true zero without an offset",TRUE
+"Valid zero-valued prior means remain usable",TRUE
+"Zero-depth profiles do not inflate carbon-curve residual degrees of freedom",TRUE
+"Sothe raw_cores update exists",TRUE
+"Sothe area_based update exists",TRUE
+"Sothe idw update exists",TRUE
+"Sothe regression update exists",TRUE
+"Fourth Sothe regression update numerical checks pass",TRUE
+"Full comparison has twelve completed update outputs",TRUE

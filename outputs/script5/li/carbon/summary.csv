@@ -1,0 +1,2 @@
+variable,units,n_confirmed_contacts,prediction_cells,mean_prior,mean_updated,LOOCV_RMSE,status
+carbon,kg C/m2,2,3831,64.1391923496664,63.50013062397759,17.303929870282946,Exploratory marginal update; uncalibrated ensemble spread

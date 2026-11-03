@@ -1,0 +1,5 @@
+variable,method,n_cores,n_confirmed_contacts,n_layer_estimated_contacts,observed_mean,between_core_sd,LOOCV_RMSE,LOOCV_MAE,LOOCV_bias,status
+depth,raw_cores,8,2,6,8.80375,11.11996137904393,NA,NA,NA,Exploratory field/classification evidence; model selection/tuning not nested
+depth,area_based,8,2,6,8.80375,11.11996137904393,11.887738752725904,10.061428571428571,-8.881784197001252e-16,Exploratory field/classification evidence; model selection/tuning not nested
+depth,idw,8,2,6,8.80375,11.11996137904393,8.514404633300206,7.269817986642768,1.9589785795057209,Exploratory field/classification evidence; model selection/tuning not nested
+depth,regression,8,2,6,8.80375,11.11996137904393,7.5255107937487145,6.551205874286334,-1.1529929497248177,Exploratory field/classification evidence; model selection/tuning not nested

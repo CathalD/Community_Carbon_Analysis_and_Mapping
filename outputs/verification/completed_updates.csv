@@ -1,0 +1,13 @@
+"variable","method","file","completed"
+"li_depth","raw_cores","outputs/script5/li_suite/depth/raw_cores/posterior_maps.tif",TRUE
+"li_depth","area_based","outputs/script5/li_suite/depth/area_based/posterior_maps.tif",TRUE
+"li_depth","idw","outputs/script5/li_suite/depth/idw/posterior_maps.tif",TRUE
+"li_depth","regression","outputs/script5/li_suite/depth/regression/posterior_maps.tif",TRUE
+"li_carbon","raw_cores","outputs/script5/li_suite/carbon/raw_cores/posterior_maps.tif",TRUE
+"li_carbon","area_based","outputs/script5/li_suite/carbon/area_based/posterior_maps.tif",TRUE
+"li_carbon","idw","outputs/script5/li_suite/carbon/idw/posterior_maps.tif",TRUE
+"li_carbon","regression","outputs/script5/li_suite/carbon/regression/posterior_maps.tif",TRUE
+"sothe_s30","raw_cores","outputs/script5/sothe/stock_0_30/raw_cores/raw_core_maps.tif",TRUE
+"sothe_s30","area_based","outputs/script5/sothe/stock_0_30/area_based/posterior_maps.tif",TRUE
+"sothe_s30","idw","outputs/script5/sothe/stock_0_30/idw/posterior_maps.tif",TRUE
+"sothe_s30","regression","outputs/script5/sothe/stock_0_30/regression/posterior_maps.tif",TRUE

@@ -1,0 +1,2 @@
+idp,nmax,RMSE,N_Cores,fallback,status
+1,2,8.514404633300206,8,FALSE,Workshop LOOCV tuning; tuning and reported error use the same cores (not nested)

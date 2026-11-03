@@ -1,0 +1,15 @@
+model,predictors,included,reason
+Mean_only,,TRUE,Eligible
+Elevation,elevation_m,TRUE,Eligible
+Slope,slope_deg,TRUE,Eligible
+Relative_elevation,relative_elevation_250m,TRUE,Eligible
+Elevation_variability,elevation_sd_250m,TRUE,Eligible
+NDVI,NDVI_summer,TRUE,Eligible
+EVI,EVI_summer,TRUE,Eligible
+Trees,DW_tree_prob,TRUE,Eligible
+Shrubs,DW_shrub_prob,TRUE,Eligible
+Flooded_vegetation,DW_floodedveg_prob,TRUE,Eligible
+Wetness,NDMI_spring,FALSE,Predictor incomplete or fewer than three distinct values; all cores retained
+Combined,elevation_m + NDVI_summer,TRUE,Eligible
+AlphaEarth_00,AE_00,TRUE,Eligible
+AlphaEarth_01,AE_01,TRUE,Eligible

@@ -1,0 +1,26 @@
+# External inputs and regenerated spatial/model outputs remain local.
+*.tif
+*.tiff
+*.vrt
+*.rds
+*.RDS
+*.gpkg
+*.zip
+*.gz
+*.crdownload
+*.pdf
+.DS_Store
+.Rproj.user/
+.Rhistory
+.RData
+.Renviron
+.env
+__pycache__/
+.ipynb_checkpoints/
+outputs/logs/
+**/predictions.csv
+**/raw_core_predictions.csv
+data/reference/ecosystem_carbon_stocks.csv
+# Keep current scientific previews; omit intermediate/legacy figures.
+*.png
+!outputs/results/full_suite/*.png

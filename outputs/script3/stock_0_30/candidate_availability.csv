@@ -1,0 +1,15 @@
+model,predictors,included,rule
+Mean_only,,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Elevation,elevation_m,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Slope,slope_deg,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Relative_elevation,relative_elevation_250m,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Elevation_variability,elevation_sd_250m,TRUE,Every predictor finite at all eight cores; at least three distinct values
+NDVI,NDVI_summer,TRUE,Every predictor finite at all eight cores; at least three distinct values
+EVI,EVI_summer,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Trees,DW_tree_prob,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Shrubs,DW_shrub_prob,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Flooded_vegetation,DW_floodedveg_prob,TRUE,Every predictor finite at all eight cores; at least three distinct values
+Wetness,NDMI_spring,FALSE,Every predictor finite at all eight cores; at least three distinct values
+Combined,elevation_m + NDVI_summer,TRUE,Every predictor finite at all eight cores; at least three distinct values
+AlphaEarth_00,AE_00,TRUE,Every predictor finite at all eight cores; at least three distinct values
+AlphaEarth_01,AE_01,TRUE,Every predictor finite at all eight cores; at least three distinct values

@@ -1,0 +1,7 @@
+Both local models ran before the Li update. No Route L models were used.
+Only PM-01-A and PM-03-A have explicit field-confirmed peat contacts in the inputs.
+All eight cores are retained in the workshop field/Sothe analysis.
+Add confirmed organic/mineral contact depths (including confirmed zero peat) for the other cores.
+Two contacts support exploratory models only; no reliable covariate depth model or validated deep carbon curve.
+No extrapolation of the local carbon-depth curve beyond its deepest measured organic profile.
+Carbon accumulation here means cumulative stock versus depth. Temporal accumulation needs chronology/ages.

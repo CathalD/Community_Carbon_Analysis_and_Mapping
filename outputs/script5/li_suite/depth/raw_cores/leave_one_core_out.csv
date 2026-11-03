@@ -1,0 +1,9 @@
+method,core_id,observed,prior,predicted,lower95,upper95,error,local_prediction,local_supported,validation_type
+raw_cores,PM-01-A,14.5,94.49202728271484,75.87465262551625,55.58195054576855,96.16735470526395,61.37465262551625,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"
+raw_cores,PM-02-A,15.2,97.652130126953125,19.812389096598622,-47.385935351276245,87.01071354447349,4.612389096598623,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"
+raw_cores,PM-03-A,30.73,102.6408462524414,-5.281006833706229,-67.58216990654276,57.020156239130294,-36.01100683370623,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"
+raw_cores,FS-05,10,77.69002532958984,36.88180569369939,-25.113759999400713,98.8773713867995,26.88180569369939,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"
+raw_cores,FS-04,0,108.17613983154297,82.57611272708816,12.561590560159743,152.59063489401657,82.57611272708816,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"
+raw_cores,FS-03,0,113.24174499511719,111.54504754390018,68.83920599662096,154.2508890911794,111.54504754390018,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"
+raw_cores,FS-02,0,152.79698181152344,138.49383304823365,90.72310263321197,186.26456346325534,138.49383304823365,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"
+raw_cores,FS-01,0,116.47675323486328,49.27617660115192,-43.88866684082909,142.44102004313294,49.27617660115192,NA,TRUE,"Whole-core outer holdout; IDW tuning, regression selection and error scales refit within training data"

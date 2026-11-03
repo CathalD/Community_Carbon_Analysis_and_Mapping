@@ -1,0 +1,2 @@
+variable,method,units,n_cores,confirmed_contacts,layer_estimated_contacts,zero_observations,prior_cells,update_applied_cells,prior_retained_cells,negative_posterior_mean_cells,mean_prior,mean_updated,prior_RMSE,nested_update_RMSE,nested_update_MAE,interval_coverage,working_error_sd,response_model,selected_regression
+carbon,regression,kg C/m2,8,2,6,4,3831,3355,476,0,64.1391923496664,10.700938947912006,56.08537709917333,34.081973963281165,20.7512697420511,0.625,2.9607599810178553,Original-scale Gaussian sensitivity; ensemble spreads are not calibrated errors,Shrubs

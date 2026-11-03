@@ -1,0 +1,6 @@
+Sothe S30 mean is the 0-30 cm stock prior.
+Sothe S100 uncertainty is a full Q95-Q05 interval width, not SD.
+Script 5 uses width/(2*qnorm(.95)) as an assumed absolute S30 SD proxy.
+This requested cross-depth sensitivity is not calibrated S30 uncertainty.
+Partial field cores are included, integrated only to their sampled bottom.
+Map differences and in-sample comparisons are not independent validation.

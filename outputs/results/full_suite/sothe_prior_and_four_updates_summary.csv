@@ -1,0 +1,11 @@
+"method","method_label","valid_cells","mean","minimum","maximum","negative_cells","panel"
+"prior","Sothe prior",3873,31.3878165473315,9.13677024841309,107.28882598877,0,"Sothe prior
+Mean 31.39 kg C/m²"
+"raw_cores","Spatial core update",3873,29.9754137416049,3.15252423286438,107.288284301758,0,"Spatial core update
+Mean 29.98 kg C/m²"
+"area_based","Area-based update",3873,13.1777155584616,7.70498371124268,47.9452247619629,0,"Area-based update
+Mean 13.18 kg C/m²"
+"idw","IDW update",3873,13.9873921403952,8.200852394104,54.8991737365723,0,"IDW update
+Mean 13.99 kg C/m²"
+"regression","Covariate-regression update",3873,13.7382416626664,7.74758577346802,50.9431915283203,0,"Covariate-regression update
+Mean 13.74 kg C/m²"

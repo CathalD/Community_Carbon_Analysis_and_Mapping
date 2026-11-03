@@ -1,0 +1,2 @@
+model,n_cores,RMSE,MAE,bias,R2,parameters,AIC,AICc,status,delta_AICc,selection_rule,fallback
+Shrubs,8,2.9607599810178553,2.3555815940793865,-0.4967738776764728,0.16893120631702108,3,38.15664948830896,44.15664948830896,Workshop fixed-model holdouts; selection not nested,0,"Lowest AICc, as in workshop Script 3",FALSE

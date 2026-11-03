@@ -1,0 +1,9 @@
+variable,method,n_cores,n_confirmed_contacts,n_layer_estimated_contacts,observed_mean,between_core_sd,LOOCV_RMSE,LOOCV_MAE,LOOCV_bias,status
+depth,raw_cores,8,2,6,8.80375,11.11996137904393,NA,NA,NA,Exploratory field/classification evidence; model selection/tuning not nested
+depth,area_based,8,2,6,8.80375,11.11996137904393,11.887738752725904,10.061428571428571,-8.881784197001252e-16,Exploratory field/classification evidence; model selection/tuning not nested
+depth,idw,8,2,6,8.80375,11.11996137904393,8.514404633300206,7.269817986642768,1.9589785795057209,Exploratory field/classification evidence; model selection/tuning not nested
+depth,regression,8,2,6,8.80375,11.11996137904393,7.5255107937487145,6.551205874286334,-1.1529929497248177,Exploratory field/classification evidence; model selection/tuning not nested
+carbon,raw_cores,8,2,6,2.3137717625,3.4720077665537326,NA,NA,NA,Exploratory field/classification evidence; model selection/tuning not nested
+carbon,area_based,8,2,6,2.3137717625,3.4720077665537326,3.711732430474934,2.6443105857142855,-2.220446049250313e-16,Exploratory field/classification evidence; model selection/tuning not nested
+carbon,idw,8,2,6,2.3137717625,3.4720077665537326,3.3682407606684537,2.658612241088789,0.5640593368267497,Exploratory field/classification evidence; model selection/tuning not nested
+carbon,regression,8,2,6,2.3137717625,3.4720077665537326,2.9607599810178553,2.3555815940793865,-0.4967738776764728,Exploratory field/classification evidence; model selection/tuning not nested

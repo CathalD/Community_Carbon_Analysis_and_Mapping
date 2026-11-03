@@ -1,0 +1,7 @@
+Li depth and carbon updates use the same workshop exponential log-Gaussian method as Sothe.
+They are separate marginal comparisons; Li carbon is derived from depth and is not independent evidence.
+Do not combine these posteriors into a joint inventory uncertainty.
+Li SD rasters describe disagreement across base models, not calibrated predictive error.
+Only two confirmed peat contacts support this exploratory run. All eight field stocks remain in Sothe.
+Local cumulative-curve mapping is NA beyond 30.73 cm rather than silently inventing a deep peat tail.
+Peat depths and organic carbon do not include a separate mineral-soil carbon pool.

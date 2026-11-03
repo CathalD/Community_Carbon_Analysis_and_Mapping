@@ -1,0 +1,9 @@
+core_id,longitude,latitude,peat_depth_cm,organic_carbon_kg_m2,sampled_bottom_cm,eligible_for_li,evidence
+FS-01,-87.6282,55.965999,NA,NA,30,FALSE,No explicit peat/mineral contact supplied
+FS-02,-87.62825,55.992611,NA,NA,30,FALSE,No explicit peat/mineral contact supplied
+FS-03,-87.87181,56.128917,NA,NA,30,FALSE,No explicit peat/mineral contact supplied
+FS-04,-87.79556,56.074278,NA,NA,30,FALSE,No explicit peat/mineral contact supplied
+FS-05,-87.75622,56.079389,NA,NA,30,FALSE,No explicit peat/mineral contact supplied
+PM-01-A,-87.67978,56.098575,14.5,3.0578035,14.5,TRUE,user-confirmed core contact
+PM-02-A,-87.65064,56.099636,NA,NA,20.7,FALSE,No explicit peat/mineral contact supplied
+PM-03-A,-87.67839,56.110356,30.73,10.1951898,30.73,TRUE,user-confirmed core contact

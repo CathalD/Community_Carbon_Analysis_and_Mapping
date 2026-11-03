@@ -1,0 +1,9 @@
+core_id,sampled_bottom_cm,depth_used_0_30_cm,coverage_0_30_fraction,complete_0_30,rule
+FS-01,30,30,1,TRUE,"Workshop: integrate to min(target, sampled bottom); include partial cores"
+FS-02,30,30,1,TRUE,"Workshop: integrate to min(target, sampled bottom); include partial cores"
+FS-03,30,30,1,TRUE,"Workshop: integrate to min(target, sampled bottom); include partial cores"
+FS-04,30,30,1,TRUE,"Workshop: integrate to min(target, sampled bottom); include partial cores"
+FS-05,30,30,1,TRUE,"Workshop: integrate to min(target, sampled bottom); include partial cores"
+PM-01-A,14.5,14.5,0.48333333333333334,FALSE,"Workshop: integrate to min(target, sampled bottom); include partial cores"
+PM-02-A,20.7,20.7,0.69,FALSE,"Workshop: integrate to min(target, sampled bottom); include partial cores"
+PM-03-A,30.73,30,1,TRUE,"Workshop: integrate to min(target, sampled bottom); include partial cores"

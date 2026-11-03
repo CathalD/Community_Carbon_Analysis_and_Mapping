@@ -1,0 +1,2 @@
+n_cores_total,n_positive_profiles_fitted,n_zero_profiles_displayed_only,slope_kg_C_m2_per_cm,residual_df,measured_depth_support_max_cm,holdout_RMSE_kg_C_m2,model,status
+8,4,4,0.2861064146655251,3,30.73,2.2260278966797022,Through-zero cumulative-carbon curve; positive-profile endpoints only,Exploratory: two confirmed contacts plus any authorized layer-derived contacts

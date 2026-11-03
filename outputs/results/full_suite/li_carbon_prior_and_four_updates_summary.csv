@@ -1,0 +1,16 @@
+"method","method_label","valid_cells","mean","minimum","maximum","negative_cells","panel"
+"prior","Li prior",3831,64.1391923496664,17.1398410797119,229.927169799805,0,"Li prior
+Mean 64.14 kg C/m²
+Negative cells: 0"
+"raw_cores","Spatial core update",3831,62.2019437511677,-27.1653308868408,229.927169799805,14,"Spatial core update
+Mean 62.20 kg C/m²
+Negative cells: 14"
+"area_based","Area-based update",3831,3.12293459011785,2.33193325996399,4.95312833786011,0,"Area-based update
+Mean 3.12 kg C/m²
+Negative cells: 0"
+"idw","IDW update",3831,1.28427018622764,0.0181190837174654,8.57104778289795,0,"IDW update
+Mean 1.28 kg C/m²
+Negative cells: 0"
+"regression","Covariate-regression update",3831,10.7009389455442,0.249219730496407,126.707420349121,0,"Covariate-regression update
+Mean 10.70 kg C/m²
+Negative cells: 0"

@@ -1,0 +1,2 @@
+variable,method,units,n_cores,confirmed_contacts,layer_estimated_contacts,zero_observations,prior_cells,update_applied_cells,prior_retained_cells,negative_posterior_mean_cells,mean_prior,mean_updated,prior_RMSE,nested_update_RMSE,nested_update_MAE,interval_coverage,working_error_sd,response_model,selected_regression
+depth,raw_cores,cm,8,2,6,4,3831,3831,0,33,125.29919078082719,121.18957225280428,102.70693091411378,76.3849965684688,63.8463780212368,0.5,5,Original-scale Gaussian sensitivity; ensemble spreads are not calibrated errors,NA

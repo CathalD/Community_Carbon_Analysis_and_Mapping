@@ -1,0 +1,3 @@
+core_id,observed_cm,predicted_cm,error_cm
+PM-01-A,14.5,30.73,16.23
+PM-03-A,30.73,14.5,-16.23

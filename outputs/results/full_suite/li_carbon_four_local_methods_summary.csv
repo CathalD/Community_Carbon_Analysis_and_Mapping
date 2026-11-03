@@ -1,0 +1,13 @@
+"method","method_label","valid_cells","mean","minimum","maximum","negative_cells","panel"
+"raw_cores","Raw core observations",NA,2.3137717625,0,10.1951898,0,"Raw core observations
+Point mean 2.31 kg C/m²
+n = 8"
+"area_based","Area-average model",4236,2.31377172470093,2.31377172470093,2.31377172470093,0,"Area-average model
+Mean 2.31 kg C/m²
+Negative cells: 0"
+"idw","IDW model",4236,0.682687182630229,0,8.00452518463135,0,"IDW model
+Mean 0.68 kg C/m²
+Negative cells: 0"
+"regression","Covariate-regression model",4236,1.8141177759835,-4.14204216003418,7.7018313407898,700,"Covariate-regression model
+Mean 1.81 kg C/m²
+Negative cells: 700"

@@ -1,0 +1,2 @@
+variable,units,n_confirmed_contacts,prediction_cells,mean_prior,mean_updated,LOOCV_RMSE,status
+depth,cm,2,3830,125.33190597424338,124.83239931829979,53.587333364868826,Exploratory marginal update; uncalibrated ensemble spread
