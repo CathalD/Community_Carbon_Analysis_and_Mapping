@@ -7,6 +7,11 @@
 # Install missing packages once:
 # install.packages(c("terra", "sf", "readr", "dplyr", "ggplot2", "jsonlite"))
 
+
+##### NOTE - HEre we will build off of the gstat package and test different spatial extrpolation methods
+##### that can provide more information on the local-scale variance
+##### These will be from gstat(log(CarbonData) ~ )
+
 library(terra)
 library(sf)
 library(readr)
