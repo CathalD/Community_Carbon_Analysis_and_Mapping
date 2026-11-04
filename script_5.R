@@ -41,7 +41,7 @@ input_files <- c(
 # Make a new blank grid:
 # First build a grid using terra
 #----- Create a new 1 km analysis grid -----
-terra::projNetwork(FALSE)
+
 aoi <- vect(input_files[["boundary"]])
 aoi <- project(aoi, "EPSG:3978")
 
@@ -408,12 +408,14 @@ observation_var <- rep(
   nrow(cores)
 )
 
+
+# ====================================================================
+
 # --- Bayesian Analysis 1 -------
 # Baysian spatial model with Raw core data
 
 # Step 1 - Calculate distance matrix
 
-# HEre we accoutn for
 
 # This uses the ordinary distance formula:
 # d_{ij}=\sqrt{(x_i-x_j)^2+(y_i-y_j)^2}
@@ -1527,6 +1529,17 @@ ggsave(
   height = 7,
   dpi = 300
 )
+
+
+
+
+
+# ==========================================
+# Bayesian - Ordinary - Kriging
+
+# This is identical to above except instead of spatial covariance (distance-weights)
+# We apply a semi-variance (variogram) derived weights - identical to kriging
+
 
 
 
