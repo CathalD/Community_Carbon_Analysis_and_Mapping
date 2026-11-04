@@ -4,6 +4,8 @@
 
 #===============================================================
 
+#### notes - Config crs so I dont have to add manually###
+
 #If packages not installed - please do so one time:
 
 #install.packages("sf")
@@ -15,12 +17,8 @@
 
 # ---- Step 1 ------
 
-# ===================
-
 # Read in the field data from Part 1:
-# ========================================================
-# Create spatial input table for mapping
-# ========================================================
+
 library(sf)
 library(readr)
 library(dplyr)
@@ -63,7 +61,7 @@ core_sf <- st_as_sf(
   crs = 4326
 )
 print(core_sf)
-# GIS housekeeping
+# GIS housekeeping - Get CRS to same projection
 aoi_proj <- st_transform(aoi, 3978)
 core_proj <- st_transform(core_sf, 3978)
 
@@ -81,8 +79,7 @@ ggplot() +
   theme_minimal()
 
 # ========================
-# ---- STEP 2A ----------
-# ========================
+# ---- Step 2A ----------
 # Simple Area-based extrapolation
 
 library(ggplot2)
@@ -91,8 +88,7 @@ library(dplyr)
 library(patchwork)
 
 # -----------------------------------
-# AOI area calculations
-# -----------------------------------
+# AOI area calculations/ Zonal Stats
 
 aoi_area_m2 <- as.numeric(st_area(aoi_proj))
 aoi_area_ha <- aoi_area_m2 / 10000
@@ -100,10 +96,8 @@ aoi_area_km2 <- aoi_area_m2 / 1e6
 
 cat("AOI Area:", round(aoi_area_km2,2), "km²\n")
 
-# -----------------------------------
-# Calculate means
-# -----------------------------------
-
+# ------------------------
+# Calculate mean
 mean_30 <- mean(core_sf$stock_0_30, na.rm = TRUE)
 mean_50 <- mean(core_sf$stock_0_50, na.rm = TRUE)
 mean_100 <- mean(core_sf$stock_0_100, na.rm = TRUE)
@@ -111,17 +105,13 @@ mean_total <- mean(core_sf$stock_Total, na.rm = TRUE)
 
 # -----------------------------------
 # Calculate AOI totals
-# -----------------------------------
-
 total_30_tC    <- mean_30    * aoi_area_m2 / 1000
 total_50_tC    <- mean_50    * aoi_area_m2 / 1000
 total_100_tC   <- mean_100   * aoi_area_m2 / 1000
 total_total_tC <- mean_total * aoi_area_m2 / 1000
 
-# -----------------------------------
+# ---------------------------
 # Summary table
-# -----------------------------------
-
 area_summary <- data.frame(
   Depth = c(
     "0-30 cm",
@@ -144,10 +134,6 @@ area_summary <- data.frame(
 )
 
 print(area_summary)
-
-# -----------------------------------
-# Define variables to map
-# -----------------------------------
 
 stock_vars <- c(
   "stock_0_30",
@@ -186,9 +172,8 @@ common_limits <- range(all_values, na.rm = TRUE)
 
 # -----------------------------------
 # Function to build Maps for each depth
-# -----------------------------------
 
-create_area_map <- function(
+create_area_map <- function( # AI helped write this function
     stock_var,
     title,
     mean_value
@@ -244,21 +229,14 @@ create_area_map <- function(
 }
 
 # -----------------------------------
-# Generate all 4 maps
-# -----------------------------------
-
+# Make 4 maps for each depth and export to folder
 plot_list <- Map(
   create_area_map,
   stock_var = stock_vars,
   title = titles,
   mean_value = mean_values
 )
-
-
-#============================================
-# Export to output folder "outputs/script2"
-# ==================================
-
+plot_list # Viiw atll 4 plots
 
 output_dir <- "outputs/script2"
 library(sf)
@@ -278,7 +256,7 @@ depth_names <- c(
 
 area_based_gpkg <- "outputs/script2/area_based.gpkg"
 
-for(i in seq_along(depth_names)) {
+for(i in seq_along(depth_names)) { #AI was used to help write this function
   
   area_poly <- aoi_proj
   area_poly$depth <- depth_names[i]
@@ -311,28 +289,30 @@ combined_plot <-
 combined_plot
 
 
-# Summary Statistics
-# Mean, standard deviation, CV, precision (p-value), margin of error
+# ---------------------------
+# Here we build on the area-averaged mean stock,
+# adding in a distance weighted function using the 
+# IDW function in the package gstat
 
+# The code was directed adapted from this source:
 
+# For documentation see here: https://www.paulamoraga.com/book-spatial/spatial-interpolation-methods.html
 
-
-# =====================
-# ------Step 2 b ----
-# ====================
-
-# Each value is proportional the distance from it
-# Package to use: - gstat
+# Package: - gstat
 # Function: gstat::idw
 # Parameters: Decay function + distance weighting
-# Evaluation: Frequentist
+
 library(sf)
 library(terra)
+
 # First build a grid using sf function
+# You can define the cell size here
+##### NOTE add cellsize as a config #######
 grid <- st_make_grid(
   aoi_proj,
   cellsize = 1000,
   square = TRUE
+  
 )
 grid_sf <- st_sf(
   grid_id = seq_along(grid),
@@ -353,6 +333,7 @@ ggplot() +
   geom_sf(data = core_proj,
           colour = "red",
           size = 3)
+
 # Assign a point to middle of each grid
 grid_points <- st_centroid(grid_sf)
 coords <- st_coordinates(grid_points)
@@ -403,6 +384,9 @@ closest_pred <- st_intersection(
 )
 head(closest_pred$stock_0_30)
 
+
+###### Here resolution is also defined and must be same as CELLSIZE #####
+
 r <- rast(
   vect(aoi_proj),
   resolution = 1000
@@ -422,16 +406,19 @@ closest_raster <- terra::rasterize(
 plot(closest_raster)   
 
 
+# Lets run the IDW prediction for stocks 0-30cm first
 summary(closest_pred$stock_0_30)
 
 IDW_30 <- gstat(formula = stock_0_30 ~ 1,
                 locations = core_proj,
-                nmax = nrow(core_proj),
-                set = list(idp = 1))
+                nmax = nrow(core_proj), # each core has 5 neighbours
+                set = list(idp = 1)) # This controls the strength of the distance as an exponetial function, setting this to 0 = area-based extrapoloation
+
 IDW_30_pred <- predict(
   IDW_30,
   pred_points
-)  
+)
+
 head(IDW_30_pred)
 
 summary(core_proj$stock_0_30)
@@ -443,6 +430,9 @@ ggplot() +
   ) +
   scale_colour_viridis_c() +
   theme_minimal()
+
+
+#------------------------
 
 #Rasterize the outputs:
 
@@ -505,12 +495,22 @@ ggplot() +
 
 # Now repeat for the other depths and stack as bands for same geotiff for export
 
-# Model Evaluation - Which parameters are best for teh given data and aoi?
-# Method - Leave-one-out cross validation
+
+# Here we are going to run IDW methods for the 4 differnet depth intervals
+# WE are going to measure the variance from each test using Leave-on-out core validatio
+# and record the RMSE -
+
+# For each depth, the best performing parameter settings will be saved and exported for
+# Further Analysis
+
+# Parameters we modify are: 
+#       1. the distance power, represented by idp in idw function
+#       2. The number fo neighbors (nMax)
+#       3. (not tested yet) Setting max distance (area-of-applicability)
 
 library(gstat)
 
-idw_loocv <- function(data, variable, idp, nmax) {
+idw_loocv <- function(data, variable, idp, nmax) { # AI helped write this function
   predicted <- numeric(nrow(data))
   for (i in seq_len(nrow(data))) {
     training <- data[-i, ]
@@ -528,19 +528,14 @@ idw_loocv <- function(data, variable, idp, nmax) {
 }
 
 tune_depth <- function(variable, depth_label) {
-  # Use the same valid observations for this depth's tuning and final model.
   data <- core_proj[is.finite(core_proj[[variable]]), ]
-  if (nrow(data) < 3L) {
-    stop("At least three cores with valid stocks are needed for ", variable)
-  }
-  
   parameters <- expand.grid(
-    idp = c(0.5, 1, 1.5, 2, 3, 4),
+    idp = c(0.5, 1, 1.5, 2, 2.5, 3, 4, 5), # NOTE - When re-running - Tune this loop to what fits best with the data you are using
     nmax = c(2, 3, 4, 5)
   )
   # A withheld core must never count as a training neighbour.
   parameters <- parameters[parameters$nmax <= nrow(data) - 1L, ]
-  parameters$RMSE <- vapply(seq_len(nrow(parameters)), function(i) {
+  parameters$RMSE <- vapply(seq_len(nrow(parameters)), function(i) { # AI helped write this function
     idw_loocv(data, variable, parameters$idp[i], parameters$nmax[i])
   }, numeric(1))
   
@@ -592,7 +587,7 @@ write.csv(best_by_depth, "outputs/script2/idw_best_parameters_by_depth.csv", row
 write.csv(tuning_by_depth, "outputs/script2/idw_tuning_by_depth.csv", row.names = FALSE)
 
 # Optional: compare the tuning surfaces for all four depths.
-optimization_plot <- ggplot2::ggplot(
+optimization_plot <- ggplot2::ggplot( # AI helped write this visualization function
   tuning_by_depth,
   ggplot2::aes(x = factor(nmax), y = factor(idp), fill = RMSE)
 ) +
@@ -605,9 +600,36 @@ optimization_plot <- ggplot2::ggplot(
   ggplot2::theme_minimal()
 print(optimization_plot)
 
+
+
+
+# -------------
+library(ggplot2)
+
+ggplot(
+  tuning_by_depth,
+  aes(
+    x = idp,
+    y = RMSE,
+    colour = factor(nmax),
+    group = nmax
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  facet_wrap(~Depth, scales = "free_y") +
+  labs(
+    x = "IDW Power (IDP)",
+    y = "LOOCV RMSE",
+    colour = "NMAX"
+  ) +
+  theme_minimal()
+
+
+
 # -------------------------------------
 # Rasterize predictions
-# -------------------------------------
+
 
 r30 <- rasterize(
   vect(pred_30),
@@ -635,7 +657,7 @@ rtotal <- rasterize(
 
 # -------------------------------------
 # Name layers
-# -------------------------------------
+
 
 names(r30) <- "Stock_0_30cm"
 names(r50) <- "Stock_0_50cm"
@@ -643,8 +665,7 @@ names(r100) <- "Stock_0_100cm"
 names(rtotal) <- "Stock_Total"
 
 # -------------------------------------
-# Create raster stack
-# -------------------------------------
+# Create raster of all layers and export
 
 carbon_stack <- c(
   r30,
@@ -652,10 +673,6 @@ carbon_stack <- c(
   r100,
   rtotal
 )
-
-# -------------------------------------
-# Export GeoTIFF
-# ------------------------------------
 
 writeRaster(
   r30,
@@ -683,7 +700,6 @@ writeRaster(
 
 # =====================================
 # Create maps
-# =====================================
 
 raster_to_df <- function(rast_obj){
   
@@ -719,7 +735,6 @@ common_limits <- range(
 
 # -------------------------------------
 # Mapping function
-# -------------------------------------
 
 create_idw_map <- function(
     raster_df,
@@ -769,7 +784,6 @@ create_idw_map <- function(
 
 # -------------------------------------
 # Build maps
-# -------------------------------------
 
 p30_idw <- create_idw_map(
   df30,
@@ -792,8 +806,8 @@ pTotal_idw <- create_idw_map(
 )
 
 # -------------------------------------
-# Combine into report figure
-# -------------------------------------
+# Combine into 1 figure
+
 
 library(patchwork)
 
@@ -805,7 +819,6 @@ idw_panel
 
 # -------------------------------------
 # Save figure
-# -------------------------------------
 
 ggsave(
   "outputs/script2/idw_maps.png",
@@ -818,7 +831,6 @@ ggsave(
 
 # =====================================
 # Calculate AOI carbon totals
-# =====================================
 
 # Attach predictions back to grid polygons
 
@@ -1015,6 +1027,76 @@ ggplot(
   theme_minimal()
 
 
+
+# ================================
+# Here I should bring in Ordinary kriging
+# =====================================
+# Ordinary Kriging
+# =====================================
+
+library(gstat)
+
+# -----------------------
+# Fit empirical variogram
+
+#First log transofrm the data
+
+stock_0_30_log = log(core_proj$stock_0_30)
+
+ok_variogram <- variogram(
+  stock_0_30_log ~ 1,
+  locations = core_proj
+)
+
+plot(ok_variogram)
+
+# -----------------------
+# Fit theoretical model
+# Try Exp, Sph, Gau
+
+ok_model <- fit.variogram(
+  ok_variogram,
+  model = vgm("Sph")
+)
+
+plot(
+  ok_variogram,
+  model = ok_model
+)
+
+print(ok_model)
+
+# -----------------------
+# Perform Ordinary Kriging
+
+OK_30 <- krige(
+  formula = stock_0_30_log ~ 1,
+  locations = core_proj,
+  newdata = pred_points,
+  model = ok_model
+)
+
+head(OK_30)
+
+OK_30$pred <- OK_30$var1.pred
+
+OK_30_raster <- rasterize(
+  vect(OK_30),
+  r,
+  field = "pred"
+)
+
+plot(OK_30_raster)
+
+OK_30$variance <- OK_30$var1.var
+
+OK_30_var_raster <- rasterize(
+  vect(OK_30),
+  r,
+  field = "variance"
+)
+
+plot(OK_30_var_raster)
 
 
 
