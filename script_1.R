@@ -1,6 +1,6 @@
 #===============================================================
 
-# -------- PArt 1 - Ingest the dataset and organize the results
+# -------- Part 1 - Ingest the dataset and organize the results
 
 #===============================================================
 
@@ -13,9 +13,6 @@
 #And set the working directory to the folder "Carbon_Analysis_and_Mapping_Workshop"
 
 # ---- Step 1 ------
-
-# ===================
-
 
 #Configuring the data:
 
@@ -319,12 +316,6 @@ ggsave(
 
 #====
 #----- Summary statistics for Part 3 --
-
-# Where does our data fit in with larger soil and sediment data?
-
-
-#====
-#----- Summary statistics for Part 3 --
 # Where does our data fit within larger soil and sediment datasets?
 
 depth_order <- c("0-30", "0-50", "0-100", "total")
@@ -342,17 +333,9 @@ reference_for_summary <- reference %>%
   ) %>%
   mutate(interval = as.character(interval))
 
-if (!nrow(field_for_summary)) {
-  stop("No valid field stocks are available to summarize.")
-}
 
-if (anyNA(field_for_summary$core_id) ||
-    anyNA(field_for_summary$interval) ||
-    anyDuplicated(field_for_summary[c("core_id", "interval")])) {
-  stop("Each field core needs one unique record per depth group.")
-}
 
-reference_percentile <- function(stock, depth) {
+reference_percentile <- function(stock, depth) { # AI helped write this function
   values <- reference_for_summary$value[
     reference_for_summary$interval == depth
   ]
@@ -361,7 +344,7 @@ reference_percentile <- function(stock, depth) {
   100 * mean(values <= stock)
 }
 
-part3_summary <- field_for_summary %>%
+part3_summary <- field_for_summary %>% # AI helped write this function
   group_by(interval) %>%
   summarise(
     field_cores = n(),
@@ -417,14 +400,8 @@ part3_chart <- ggplot(part3_summary, aes(y = interval)) +
     limits = rev(depth_order[depth_order %in% part3_summary$interval])
   ) +
   labs(
-    title = "Where our field stocks sit within the reference data",
-    x = "Percentile among available soil and sediment reference records",
-    y = NULL,
-    caption = paste(
-      "Diamond = field median; line = field-core range; grey = reference middle 50%.",
-      "Reporting groups retain the agreed depth caps; sampled depths can differ.",
-      sep = "\n"
-    )
+    x = "Field data relative to reference data (as percentile)",
+    y = NULL
   ) +
   theme_minimal() +
   theme(panel.grid.major.y = element_blank())
@@ -432,9 +409,8 @@ part3_chart <- ggplot(part3_summary, aes(y = interval)) +
 print(part3_chart)
 print(part3_summary)
 
-# Prefer 0–30 cm for the reporting sentence.
-# Otherwise use total, then another available group.
-summary_depth <- if ("0-30" %in% part3_summary$interval) {
+
+summary_depth <- if ("0-30" %in% part3_summary$interval) { # AI helped write this function
   "0-30"
 } else if ("total" %in% part3_summary$interval) {
   "total"
@@ -450,31 +426,6 @@ depth_label <- if (summary_depth == "total") {
   paste0(summary_depth, " cm")
 }
 
-part3_sentence <- sprintf(
-  paste0(
-    "For %s, field stocks (n = %d) averaged %.2f kg C/m² ",
-    "(median %.2f; range %.2f–%.2f)"
-  ),
-  depth_label, s$field_cores, s$mean_stock,
-  s$median_stock, s$minimum_stock, s$maximum_stock
-)
-
-if (s$reference_profiles > 0) {
-  part3_sentence <- paste0(part3_sentence, sprintf(
-    paste0(
-      "; %.0f%% of %s available soil and sediment reference records ",
-      "in this reporting group had stocks at or below that median."
-    ),
-    s$median_percentile,
-    format(s$reference_profiles, big.mark = ",", trim = TRUE)
-  ))
-} else {
-  part3_sentence <- paste0(
-    part3_sentence, "; no matching reference records were available."
-  )
-}
-
-cat(part3_sentence, "\n")
 
 dir.create("outputs/script1", recursive = TRUE, showWarnings = FALSE)
 
@@ -487,13 +438,9 @@ readr::write_csv(
   part3_summary, "outputs/script1/part3_summary_statistics.csv"
 )
 
-writeLines(
-  part3_sentence, "outputs/script1/part3_summary_sentence.txt"
-)
-
 part3_summary
 
-# Export the single table used by Scripts 2–5.
+# Export Results to be used in other scripts:
 mapping_data <- core_summary %>%
   left_join(core_sheet, by = "Core ID") %>%
   relocate(`Core ID`, `Plot ID`, Latitude, Longitude)
