@@ -1,652 +1,334 @@
-#===============================================================
 
-# -------- Part 4 ------------------
+# ==========================
 
-#===============================================================
+# Part 4: prepare the prior and compare mapped stocks
 
+# ===============
 library(terra)
 library(readr)
 library(dplyr)
+source("config.R")
+source("helpers/grid_helper.R")
 
+# 1. Inputs and the shared analysis grid
 output_folder <- "outputs/script4"
 dir.create(output_folder, recursive = TRUE, showWarnings = FALSE)
+shared <- load_analysis_grid()
+template <- shared$template
+analysis_mask <- shared$mask
 
-#============
-# Step 1 - Load Everything we've done so dar
-#===================
+# Figure settings: NULL uses one common range across all methods AND depths.
+# Set numeric limits here if you want to fix the scale between workshop runs.
+map_colours <- hcl.colors(100, "Viridis")
+prediction_limits <- NULL
+sd_limits <- NULL
+panel_columns <- 3
 
-# Field stocks and study boundary
+# Transfer external values to the shared cell centres once.
+align_to_grid <- function(x) {
+  if (!compareGeom(x, template, stopOnError = FALSE)) {
+    x <- project(x, template, method = "near")
+  }
+  mask(x, analysis_mask)
+}
 
-cores <- read_csv(
-  "outputs/script1/mapping_data.csv",
-  show_col_types = FALSE
-)
+# 2. Prepare paired prior stock and uncertainty
+prepared_priors <- list()
+for (depth in intersect(names(prior_mean_files), names(prior_width_files))) {
+  source_mean <- rast(prior_mean_files[[depth]])
+  source_width <- rast(prior_width_files[[depth]])
+  compareGeom(source_mean, source_width)
+  pair <- align_to_grid(c(source_mean, source_width))
+  names(pair) <- c("prior_mean", "interval_width_90")
+  prior_sd <- pair$interval_width_90 / (2 * qnorm(0.95))
+  usable <- is.finite(pair$prior_mean) & pair$prior_mean > 0 &
+    is.finite(prior_sd) & prior_sd > 0
+  pair <- mask(pair, usable, maskvalues = 0)
+  prior_sd <- mask(prior_sd, usable, maskvalues = 0)
+  log_variance <- log1p((prior_sd / pair$prior_mean)^2)
+  log_mean <- log(pair$prior_mean) - log_variance / 2
+  prior <- c(pair$prior_mean, prior_sd, log_mean, log_variance)
+  names(prior) <- c("prior_mean", "prior_sd", "log_mean", "log_variance")
+  writeRaster(prior, file.path(output_folder, paste0("prior_moments_0_", depth, "cm.tif")),
+              datatype = "FLT8S", overwrite = TRUE)
+  # Keep the familiar filenames; the width layer retains its original units.
+  writeRaster(pair$prior_mean, file.path(output_folder, basename(prior_mean_files[[depth]])),
+              overwrite = TRUE)
+  writeRaster(pair$interval_width_90,
+              file.path(output_folder, basename(prior_width_files[[depth]])), overwrite = TRUE)
+  prepared_priors[[depth]] <- prior
+  cat("\nPrior 0–", depth, "cm: Q95-Q05 -> approximate SD -> lognormal moments.\n", sep = "")
+  print(global(prior, c("min", "max", "notNA"), na.rm = TRUE))
+  png(file.path(output_folder, paste0("prior_0_", depth, "cm.png")),
+      width = 1400, height = 700, res = 150)
+  plot(prior[[1:2]], col = map_colours,
+       main = c("Prior mean (kg C/m²)", "Approximate prior SD (kg C/m²)"))
+  dev.off()
+  plot(prior[[1:2]], col = map_colours,
+       main = c("Prior mean", "Approximate prior SD"))
+}
 
-aoi <- vect("data/boundary/aoi.geojson")
+# 3. Read the saved prediction and uncertainty products
+# Everything below uses the shared grid. No field stocks or fitted models change.
+make_map_record <- function(prediction, variance, method, uncertainty, scale,
+                            n_cores = NA_integer_, selected = FALSE) {
+  if (is.null(variance)) {
+    variance <- rast(template)
+    values(variance) <- NA_real_
+    uncertainty <- paste("Unavailable. Expected definition:", uncertainty)
+  }
+  list(prediction = prediction, variance = variance, info = data.frame(
+    method = method, modelling_scale = scale, uncertainty_definition = uncertainty,
+    n_cores = n_cores, selected_regression = selected,
+    weighting_power = NA_real_, neighbours = NA_real_,
+    CV_error_log_variance = NA_real_, prediction_log_variance = NA_real_,
+    CV_RMSE_log = NA_real_, CV_RMSE_kg_C_m2 = NA_real_, AICc = NA_real_
+  ))
+}
 
-core_points <- vect(
-  cores[, c("Core ID", "Longitude", "Latitude")],
-  geom = c("Longitude", "Latitude"),
-  crs = "EPSG:4326"
-)
-
-
-# Area-based average and IDW outputs
-
-area_0_30 <- vect(
-  "outputs/script2/area_based.gpkg",
-  layer = "area_based_0_30"
-)
-
-area_0_100 <- vect(
-  "outputs/script2/area_based.gpkg",
-  layer = "area_based_0_100"
-)
-
-idw_0_30 <- rast("outputs/script2/idw_0_30cm.tif")
-idw_0_100 <- rast("outputs/script2/idw_0_100cm.tif")
-
-# Match the boundary and points to the IDW coordinate system
-aoi <- project(aoi, crs(idw_0_30))
-core_points <- project(core_points, crs(idw_0_30))
-
-#---------------------------------------------------------------
-# Script 3 regression maps — currently 0–30 cm
-#---------------------------------------------------------------
-# Optional selected model from Script 3
-comparison_stock <- "stock_0_30"
-
-selected_folder <- file.path(
-  "outputs/script3",
-  comparison_stock
-)
-
-selected_map_file <- file.path(
-  selected_folder,
-  "selected_carbon_stock.tif"
-)
-
-selected_info_file <- file.path(
-  selected_folder,
-  "selected_model.csv"
-)
-
-regression_maps <- list()
-
-if (file.exists(selected_map_file) &&
-    file.exists(selected_info_file)) {
-  
-  selected_info <- read_csv(
-    selected_info_file,
-    show_col_types = FALSE
+# Regression uncertainty is derived from the EXISTING lm objects in Script 3.
+# For a new point: prediction variance = SE(fitted mean)^2 + residual variance.
+# This assumes the fitted raw-stock model with independent, constant-variance
+# errors. It does not include model-selection or spatial error uncertainty.
+covariate_file <- "outputs/script3/covariates/terrain_water.tif"
+grid_covariates <- NULL
+if (file.exists(covariate_file)) {
+  grid_covariates <- as.data.frame(
+    values(align_to_grid(rast(covariate_file)), mat = TRUE)
   )
-  
-  model_label <- paste0("Script3_", selected_info$model[1])
-  
-  regression_maps[[model_label]] <- rast(selected_map_file)
-  
-  cat("Imported:", model_label, "\n")
-  
-} else {
-  message("No selected Script 3 model found; continuing without it.")
 }
 
-#---------------------------------------------------------------
-# Prior stock and uncertainty — 0–100 cm
-#---------------------------------------------------------------
+comparisons <- list()
+summary_rows <- list()
+guide_rows <- list()
+depth_groups <- c(paste0("0_", mapping_depths_cm), "Total")
 
-prior_0_100 <- rast(
-  "data/priors/mcmaster_0_100cm.tif"
-)
+for (depth in depth_groups) {
+  suffix <- if (depth == "Total") "total" else paste0(depth, "cm")
+  methods <- list()
 
-prior_uncertainty_0_100 <- rast(
-  "data/priors/mcmaster_uncertainty_0_100cm.tif"
-)
-
-names(prior_0_100) <- "prior_stock_0_100"
-names(prior_uncertainty_0_100) <- "prior_uncertainty_0_100"
-
-print(prior_0_100)
-print(prior_uncertainty_0_100)
-
-#---------------------------------------------------------------
-# Preview the prior maps with field-core locations
-#---------------------------------------------------------------
-
-prior_aoi <- project(aoi, crs(prior_0_100))
-prior_points <- project(core_points, crs(prior_0_100))
-
-old_par <- par(mfrow = c(1, 2))
-
-plot(prior_0_100, main = "Prior stock: 0–100 cm (kg C/m²)")
-plot(prior_aoi, add = TRUE, border = "black")
-points(prior_points, pch = 21, bg = "red", cex = 1)
-
-plot(prior_uncertainty_0_100, main = "Prior uncertainty")
-plot(prior_aoi, add = TRUE, border = "black")
-points(prior_points, pch = 21, bg = "red", cex = 1)
-
-par(old_par)
-
-
-#==========================================
-#----- 4B: Align maps for comparison -------
-#==========================================
-
-# Convert the area-average polygons to rasters
-area_raster_0_30 <- rasterize(
-  project(area_0_30, crs(idw_0_30)),
-  idw_0_30,
-  field = "mean_stock_kg_m2"
-)
-
-area_raster_0_100 <- rasterize(
-  project(area_0_100, crs(idw_0_100)),
-  idw_0_100,
-  field = "mean_stock_kg_m2"
-)
-
-
-# Align a stock map to the comparison grid
-align_stock <- function(x, template) {
-  
-  if (compareGeom(x, template, stopOnError = FALSE)) {
-    return(x)
-  }
-  
-  if (crs(x) != crs(template)) {
-    return(project(x, template, method = "average"))
-  }
-  
-  resample(x, template, method = "average")
-}
-
-
-# Combine maps and retain their shared coverage
-prepare_comparison <- function(map_list, template, boundary) {
-  
-  aligned <- lapply(
-    map_list,
-    function(x) align_stock(x, template)
-  )
-  
-  maps <- do.call(c, unname(aligned))
-  names(maps) <- names(map_list)
-  
-  maps <- mask(
-    maps,
-    project(boundary, crs(template)),
-    touches = FALSE
-  )
-  
-  # A cell qualifies only when all methods have data
-  shared_cells <- app(!is.na(maps), fun = "sum") == nlyr(maps)
-  
-  if (global(shared_cells, "sum", na.rm = TRUE)[1, 1] == 0) {
-    stop("The maps have no shared coverage inside the boundary.")
-  }
-  
-  mask(maps, shared_cells, maskvalues = 0)
-}
-
-
-#----- 0–30 cm comparison -----
-
-maps_0_30 <- c(
-  list(
-    Area_average = area_raster_0_30,
-    IDW = idw_0_30
-  ),
-  regression_maps
-)
-
-comparison_0_30 <- prepare_comparison(
-  maps_0_30,
-  idw_0_30,
-  aoi
-)
-
-
-#----- 0–100 cm comparison -----
-
-maps_0_100 <- list(
-  Area_average = area_raster_0_100,
-  IDW = idw_0_100,
-  McMaster_prior = prior_0_100
-)
-
-comparison_0_100 <- prepare_comparison(
-  maps_0_100,
-  idw_0_100,
-  aoi
-)
-
-
-#----- Save the aligned maps -----
-
-writeRaster(
-  comparison_0_30,
-  file.path(output_folder, "comparison_0_30.tif"),
-  overwrite = TRUE
-)
-
-writeRaster(
-  comparison_0_100,
-  file.path(output_folder, "comparison_0_100.tif"),
-  overwrite = TRUE
-)
-
-
-#----- Check the number of comparison cells -----
-
-cat("\n0–30 cm: cells available for each method\n")
-print(global(!is.na(comparison_0_30), "sum"))
-
-cat("\n0–100 cm: cells available for each method\n")
-print(global(!is.na(comparison_0_100), "sum"))
-
-
-#==========================================
-#----- 4C: Summary statistics and chart ----
-#==========================================
-
-library(ggplot2)
-
-comparison_sets <- list(
-  "0-30 cm" = comparison_0_30,
-  "0-100 cm" = comparison_0_100
-)
-
-depth_files <- c(
-  "0-30 cm" = "0_30",
-  "0-100 cm" = "0_100"
-)
-
-# All stock statistics are in kg C/m².
-# n_cells counts map cells, not field observations.
-
-map_summary <- data.frame()
-
-for (depth in names(comparison_sets)) {
-  
-  r <- comparison_sets[[depth]]
-  
-  for (method in names(r)) {
-    
-    x <- values(r[[method]], mat = FALSE)
-    x <- x[is.finite(x)]
-    
-    map_summary <- bind_rows(
-      map_summary,
-      data.frame(
-        depth = depth,
-        method = method,
-        n_cells = length(x),
-        mean_stock = mean(x),
-        median_stock = median(x),
-        spatial_sd = sd(x),
-        spatial_cv_percent = if (mean(x) == 0) {
-          NA_real_
-        } else {
-          100 * sd(x) / abs(mean(x))
-        },
-        q25 = unname(quantile(x, 0.25)),
-        q75 = unname(quantile(x, 0.75)),
-        minimum = min(x),
-        maximum = max(x)
-      )
-    )
-  }
-}
-
-print(map_summary)
-
-write_csv(
-  map_summary,
-  file.path(output_folder, "map_summary.csv")
-)
-
-
-# Horizontal chart: mean and middle 50% of map values
-
-summary_plot <- ggplot(
-  map_summary,
-  aes(y = method)
-) +
-  geom_segment(
-    aes(x = q25, xend = q75, yend = method),
-    linewidth = 3,
-    colour = "#A6CEE3"
-  ) +
-  geom_point(
-    aes(x = mean_stock),
-    size = 3,
-    colour = "#1F78B4"
-  ) +
-  facet_wrap(~ depth, ncol = 1, scales = "free") +
-  scale_y_discrete(
-    labels = function(x) gsub("_", " ", x)
-  ) +
-  labs(
-    title = "Carbon stock across the comparison area",
-    x = "Carbon stock (kg C/m²)",
-    y = NULL,
-    caption = paste(
-      "Points: map means. Bars: 25th–75th percentiles.",
-      "Bars describe spatial variation, not confidence intervals."
-    )
-  ) +
-  theme_minimal(base_size = 12)
-
-print(summary_plot)
-
-ggsave(
-  file.path(output_folder, "map_summary.png"),
-  summary_plot,
-  width = 9,
-  height = 6,
-  dpi = 300
-)
-
-
-#==========================================
-#----- 4D: Map comparison panels -----------
-#==========================================
-
-# Each panel uses the same colour scale within its depth group.
-# Black points mark field cores.
-
-save_map_panel <- function(
-    r, depth, filename, difference = FALSE) {
-  
-  limits <- range(minmax(r), finite = TRUE)
-  
-  if (difference) {
-    
-    largest <- max(abs(limits))
-    
-    if (largest == 0) largest <- 1
-    
-    limits <- c(-largest, largest)
-    
-    colours <- colorRampPalette(
-      c("#2166AC", "white", "#B2182B")
-    )(101)
-    
-  } else {
-    
-    if (diff(limits) == 0) {
-      limits <- limits + c(-0.5, 0.5)
+  # Area-based, IDW and kriging: read carbon-scale variances already exported.
+  for (method in c("area_based", "idw", "ok")) {
+    prediction_file <- file.path("outputs/script2", paste0(method, "_", suffix, ".tif"))
+    variance_file <- file.path("outputs/script2", paste0(method, "_variance_", suffix, ".tif"))
+    if (!file.exists(prediction_file)) {
+      cat("No saved", method, "prediction for", depth, "- skipped.\n")
+      next
     }
-    
-    colours <- hcl.colors(100, "YlGnBu")
+    prediction <- rast(prediction_file)
+    compareGeom(prediction, template)
+    variance <- NULL
+    if (file.exists(variance_file)) {
+      variance <- rast(variance_file)
+      compareGeom(variance, template)
+      variance <- ifel(variance >= 0, variance, NA)
+    } else {
+      cat("No saved uncertainty for", method, depth, "\n")
+    }
+    uncertainty <- switch(method,
+      area_based = paste(
+        "Lognormal approximation from constant-mean normal-model prediction variance:",
+        "var(log stock)*(1+1/n); independent cores and fixed estimated parameters"
+      ),
+      idw = "Lognormal approximation from pooled held-out plot errors; working error variance and fixed calibration",
+      ok = "Lognormal approximation from conditional kriging variance; inspect variogram warnings"
+    )
+    record <- make_map_record(
+      mask(prediction, analysis_mask), variance, method, uncertainty, "Natural log carbon"
+    )
+    calibration_file <- file.path("outputs/script2", paste0(method, "_calibration_", suffix, ".csv"))
+    if (file.exists(calibration_file)) {
+      calibration <- read_csv(calibration_file, show_col_types = FALSE)
+      record$info$n_cores <- calibration$n_cores[1]
+      record$info$CV_RMSE_log <- calibration$RMSE_log[1]
+      record$info$weighting_power <- calibration$power[1]
+      record$info$neighbours <- calibration$neighbours[1]
+      record$info$CV_error_log_variance <- calibration$log_error_variance[1]
+      if ("prediction_log_variance" %in% names(calibration)) {
+        record$info$prediction_log_variance <- calibration$prediction_log_variance[1]
+      }
+    }
+    methods[[method]] <- record
   }
-  
-  boundary <- project(aoi, crs(r))
-  locations <- project(core_points, crs(r))
-  
-  png(
-    file.path(output_folder, filename),
-    width = 650 * nlyr(r),
-    height = 700,
-    res = 150
-  )
-  
-  on.exit(dev.off())
-  
-  par(mfrow = c(1, nlyr(r)))
-  
-  for (i in seq_len(nlyr(r))) {
-    
-    label <- paste(
-      strwrap(gsub("_", " ", names(r)[i]), width = 25),
-      collapse = "\n"
-    )
-    
-    plot(
-      r[[i]],
-      main = paste(depth, label, sep = "\n"),
-      range = limits,
-      col = colours,
-      plg = list(title = "kg C/m²"),
-      mar = c(2, 2, 5, 5)
-    )
-    
-    plot(
-      boundary,
-      add = TRUE,
-      border = "grey30",
-      lwd = 0.7
-    )
-    
-    points(
-      locations,
-      pch = 21,
-      bg = "black",
-      col = "white",
-      cex = 1
-    )
-  }
-}
 
-for (depth in names(comparison_sets)) {
-  
-  save_map_panel(
-    comparison_sets[[depth]],
-    depth,
-    paste0("maps_", depth_files[[depth]], ".png")
-  )
-}
+  # Include every saved Script 3 regression, marking the selected model.
+  regression_folder <- file.path("outputs/script3", paste0("stock_", depth))
+  models_file <- file.path(regression_folder, "fitted_models.rds")
+  selected_file <- file.path(regression_folder, "selected_model.csv")
+  evaluation_file <- file.path(regression_folder, "model_evaluation.csv")
+  selected_model <- if (file.exists(selected_file)) {
+    read_csv(selected_file, show_col_types = FALSE)$model[1]
+  } else NA_character_
+  evaluation <- if (file.exists(evaluation_file)) {
+    read_csv(evaluation_file, show_col_types = FALSE)
+  } else NULL
 
-
-#==========================================
-#----- 4E: Differences between methods -----
-#==========================================
-
-# Differences describe map agreement, not prediction accuracy.
-# Direction is always: second method minus first method.
-
-map_agreement <- data.frame()
-
-for (depth in names(comparison_sets)) {
-  
-  r <- comparison_sets[[depth]]
-  pairs <- combn(names(r), 2)
-  difference_layers <- list()
-  
-  for (i in seq_len(ncol(pairs))) {
-    
-    first <- pairs[1, i]
-    second <- pairs[2, i]
-    
-    a <- values(r[[first]], mat = FALSE)
-    b <- values(r[[second]], mat = FALSE)
-    
-    keep <- is.finite(a) & is.finite(b)
-    difference_values <- b[keep] - a[keep]
-    
-    label <- paste0(second, "_minus_", first)
-    
-    difference_layers[[label]] <- r[[second]] - r[[first]]
-    
-    map_agreement <- bind_rows(
-      map_agreement,
-      data.frame(
-        depth = depth,
-        first_method = first,
-        second_method = second,
-        n_cells = sum(keep),
-        mean_difference = mean(difference_values),
-        mean_absolute_difference = mean(abs(difference_values)),
-        rms_difference = sqrt(mean(difference_values^2))
+  if (file.exists(models_file)) {
+    fitted_models <- readRDS(models_file)
+    for (model_name in names(fitted_models)) {
+      prediction_file <- file.path(regression_folder, model_name, "carbon_stock_kg_m2.tif")
+      if (!file.exists(prediction_file)) next
+      prediction <- align_to_grid(rast(prediction_file))
+      fit <- fitted_models[[model_name]]
+      variance <- NULL
+      predictors <- all.vars(formula(fit))[-1]
+      if (!is.null(grid_covariates) || !length(predictors)) {
+        newdata <- if (length(predictors)) {
+          grid_covariates[, predictors, drop = FALSE]
+        } else data.frame(cell = seq_len(ncell(template)))
+        fitted <- stats::predict(fit, newdata = newdata, se.fit = TRUE)
+        variance <- rast(template)
+        values(variance) <- as.numeric(fitted$se.fit)^2 + stats::sigma(fit)^2
+        variance <- mask(variance, prediction)
+      }
+      method <- paste0("Regression_", model_name)
+      record <- make_map_record(
+        prediction, variance, method,
+        "Normal-model prediction variance: SE(fitted mean)^2 + residual variance; no selection/spatial error correction",
+        "Original carbon units (Script 3 unchanged)", nobs(fit),
+        selected = isTRUE(model_name == selected_model)
       )
+      if (!is.null(evaluation)) {
+        score <- evaluation[evaluation$model == model_name, ]
+        if (nrow(score)) {
+          record$info$CV_RMSE_kg_C_m2 <- score$RMSE[1]
+          record$info$AICc <- score$AICc[1]
+        }
+      }
+      methods[[method]] <- record
+      if (isTRUE(model_name == selected_model)) {
+        # Preserve the existing aligned selected-regression filename.
+        writeRaster(prediction,
+                    file.path(output_folder, paste0("regression_selected_", suffix, ".tif")),
+                    overwrite = TRUE)
+      }
+    }
+  }
+
+  # Prior uncertainty is approximate stock SD, not the original Q95-Q05 width.
+  depth_key <- sub("^0_", "", depth)
+  if (depth_key %in% names(prepared_priors)) {
+    prior <- prepared_priors[[depth_key]]
+    methods$Prior <- make_map_record(
+      prior$prior_mean, prior$prior_sd^2, "Prior",
+      "Source Q95-Q05 width divided by 2*qnorm(0.95) gives approximate SD",
+      "Source carbon mean; moment-matched lognormal prior"
     )
   }
-  
-  difference_maps <- do.call(c, unname(difference_layers))
-  names(difference_maps) <- names(difference_layers)
-  
-  writeRaster(
-    difference_maps,
-    file.path(
-      output_folder,
-      paste0("differences_", depth_files[[depth]], ".tif")
-    ),
-    overwrite = TRUE
-  )
-  
-  save_map_panel(
-    difference_maps,
-    depth,
-    paste0("differences_", depth_files[[depth]], ".png"),
-    difference = TRUE
-  )
-}
+  if (!length(methods)) next
 
-print(map_agreement)
+  # Use matching-depth predictions on the SAME valid cells for each comparison.
+  predictions <- do.call(c, unname(lapply(methods, function(x) x$prediction)))
+  variances <- do.call(c, unname(lapply(methods, function(x) x$variance)))
+  names(predictions) <- names(variances) <- names(methods)
+  common_cells <- app(is.finite(predictions), "sum") == nlyr(predictions)
+  predictions <- mask(predictions, common_cells, maskvalues = 0)
+  variances <- mask(variances, common_cells, maskvalues = 0)
+  standard_deviations <- sqrt(variances)
+  comparisons[[depth]] <- list(prediction = predictions, sd = standard_deviations)
 
-write_csv(
-  map_agreement,
-  file.path(output_folder, "map_agreement.csv")
-)
+  # Export prediction, variance and SD stacks for GIS use.
+  writeRaster(predictions, file.path(output_folder, paste0("comparison_", depth, ".tif")),
+              overwrite = TRUE)
+  writeRaster(variances, file.path(output_folder, paste0("uncertainty_variance_", depth, ".tif")),
+              overwrite = TRUE)
+  writeRaster(standard_deviations, file.path(output_folder, paste0("uncertainty_sd_", depth, ".tif")),
+              overwrite = TRUE)
 
-
-#==========================================
-#----- 4F: Compare maps at field cores -----
-#==========================================
-
-# Extract the mapped cell containing each core.
-# Keep the field stock definitions established in Script 1.
-
-field_columns <- c(
-  "0-30 cm" = "C Stock 0-30cm",
-  "0-100 cm" = "C Stock 0-100cm"
-)
-
-core_comparison <- data.frame()
-
-for (depth in names(comparison_sets)) {
-  
-  r <- comparison_sets[[depth]]
-  
-  mapped_values <- terra::extract(
-    r,
-    project(core_points, crs(r)),
-    method = "simple",
-    ID = FALSE
-  )
-  
-  for (method in names(r)) {
-    
-    core_comparison <- bind_rows(
-      core_comparison,
-      data.frame(
-        core_id = cores[["Core ID"]],
-        depth = depth,
-        method = method,
-        observed = cores[[field_columns[[depth]]]],
-        mapped = mapped_values[[method]]
-      )
+  for (method in names(methods)) {
+    prediction_values <- as.numeric(values(predictions[[method]]))
+    prediction_values <- prediction_values[is.finite(prediction_values)]
+    sd_values <- as.numeric(values(standard_deviations[[method]]))
+    sd_values <- sd_values[is.finite(sd_values)]
+    key <- paste(depth, method, sep = ":")
+    summary_rows[[key]] <- data.frame(
+      depth = depth, method = method,
+      prediction_cells = length(prediction_values),
+      mean_kg_C_m2 = if (length(prediction_values)) mean(prediction_values) else NA_real_,
+      min_kg_C_m2 = if (length(prediction_values)) min(prediction_values) else NA_real_,
+      max_kg_C_m2 = if (length(prediction_values)) max(prediction_values) else NA_real_,
+      negative_prediction_cells = sum(prediction_values < 0),
+      spatial_SD_kg_C_m2 = if (length(prediction_values) > 1) sd(prediction_values) else NA_real_,
+      uncertainty_cells = length(sd_values),
+      mean_pointwise_SD_kg_C_m2 = if (length(sd_values)) mean(sd_values) else NA_real_,
+      min_pointwise_SD_kg_C_m2 = if (length(sd_values)) min(sd_values) else NA_real_,
+      max_pointwise_SD_kg_C_m2 = if (length(sd_values)) max(sd_values) else NA_real_,
+      mean_pointwise_variance = if (length(sd_values)) mean(sd_values^2) else NA_real_
     )
+    guide_rows[[key]] <- cbind(depth = depth, methods[[method]]$info)
   }
 }
 
-core_comparison <- core_comparison %>%
-  mutate(difference = mapped - observed)
+# 4. Summary table: map variation and pointwise uncertainty are separate columns.
+map_summary <- bind_rows(summary_rows) %>%
+  left_join(bind_rows(guide_rows), by = c("depth", "method"))
+if (!nrow(map_summary)) stop("No saved prediction maps found. Run Scripts 2 and 3 first.")
+write_csv(map_summary, file.path(output_folder, "map_summary.csv"))
+write_csv(bind_rows(guide_rows), file.path(output_folder, "map_methods.csv"))
+cat("\nMap summary: means/SDs are kg C/m²; variances are (kg C/m²)².\n")
+print(as.data.frame(map_summary[, c(
+  "depth", "method", "prediction_cells", "mean_kg_C_m2", "min_kg_C_m2",
+  "max_kg_C_m2", "mean_pointwise_SD_kg_C_m2"
+)]), row.names = FALSE, digits = 4)
+cat("Spatial SD describes variation across predicted cells; pointwise SD describes uncertainty.\n")
+cat("Log RMSE and carbon-scale RMSE are separate columns and must not be ranked together.\n")
+cat("Uncertainty definitions differ by method; these maps do not measure regional-total uncertainty.\n")
+cat("Only saved results are shown; old outputs require rerunning the producing script to refresh.\n")
 
-write_csv(
-  core_comparison,
-  file.path(output_folder, "core_comparison.csv")
-)
+# 5. Plot prediction and uncertainty panels with consistent colours and limits.
+if (is.null(prediction_limits)) {
+  prediction_limits <- range(c(0, map_summary$min_kg_C_m2, map_summary$max_kg_C_m2), finite = TRUE)
+}
+if (is.null(sd_limits)) {
+  sd_limits <- range(c(0, map_summary$max_pointwise_SD_kg_C_m2), finite = TRUE)
+}
+if (diff(prediction_limits) == 0) prediction_limits <- prediction_limits + c(0, 1)
+if (diff(sd_limits) == 0) sd_limits <- sd_limits + c(0, 1)
 
+draw_comparison <- function(maps, depth, quantity, limits) {
+  columns <- min(panel_columns, nlyr(maps))
+  previous_settings <- par(mfrow = c(ceiling(nlyr(maps) / columns), columns))
+  on.exit(par(previous_settings))
+  depth_label <- if (depth == "Total") "Total sampled profile" else {
+    paste0("0-", sub("^0_", "", depth), " cm")
+  }
+  for (method in names(maps)) {
+    label <- switch(method, area_based = "Area-based", idw = "IDW",
+                    ok = "Ordinary kriging", Prior = "Prior", method)
+    label <- gsub("_", " ", label)
+    selected <- map_summary$selected_regression[
+      map_summary$depth == depth & map_summary$method == method
+    ]
+    if (isTRUE(selected)) label <- paste0(label, " (selected)")
+    title <- paste0(label, "\n", depth_label, " | ", quantity, " (kg C/m²)")
+    if (any(is.finite(values(maps[[method]])))) {
+      # Force a continuous scale even for uniform area-based/mean-only maps.
+      plot(maps[[method]], type = "continuous", col = map_colours,
+           range = limits, main = title, cex.main = 0.9,
+           mar = c(3, 3, 4, 5))
+    } else {
+      plot.new()
+      title(main = title, cex.main = 0.9)
+      text(0.5, 0.5, "No saved / computable values")
+    }
+  }
+}
 
-# Descriptive fit statistics at the sampled cores
-
-core_fit_summary <- core_comparison %>%
-  filter(is.finite(observed), is.finite(mapped)) %>%
-  group_by(depth, method) %>%
-  summarise(
-    n_cores = n(),
-    mean_observed = mean(observed),
-    mean_mapped = mean(mapped),
-    mean_difference = mean(difference),
-    MAE = mean(abs(difference)),
-    RMSE = sqrt(mean(difference^2)),
-    .groups = "drop"
-  )
-
-print(core_fit_summary)
-
-write_csv(
-  core_fit_summary,
-  file.path(output_folder, "core_fit_summary.csv")
-)
-
-
-# Observed versus mapped stocks
-
-core_plot <- ggplot(
-  core_comparison,
-  aes(x = observed, y = mapped)
-) +
-  geom_abline(
-    slope = 1,
-    intercept = 0,
-    linetype = "dashed",
-    colour = "grey50"
-  ) +
-  geom_point(
-    size = 2.5,
-    colour = "#1F78B4",
-    na.rm = TRUE
-  ) +
-  facet_wrap(~ depth + method, ncol = 3) +
-  coord_equal() +
-  labs(
-    title = "Mapped carbon stock at field-core locations",
-    x = "Observed stock (kg C/m²)",
-    y = "Mapped stock (kg C/m²)",
-    caption = paste(
-      "Dashed line: mapped equals observed.",
-      "Local-method fits are not independent validation."
-    )
-  ) +
-  theme_minimal(base_size = 11)
-
-print(core_plot)
-
-ggsave(
-  file.path(output_folder, "core_comparison.png"),
-  core_plot,
-  width = 11,
-  height = 7,
-  dpi = 300
-)
-
-
-#==========================================
-#----- 4G: Carry prior files into Script 5 -
-#==========================================
-
-# Copy both prior files unchanged.
-# The uncertainty values are not converted or reinterpreted here.
-
-prior_files <- c(
-  "mcmaster_0_100cm.tif",
-  "mcmaster_uncertainty_0_100cm.tif"
-)
-
-copied <- file.copy(
-  from = file.path("data/priors", prior_files),
-  to = output_folder,
-  overwrite = TRUE
-)
-
-stopifnot(all(copied))
-
-cat(
-  "\nScript 4 complete. Outputs saved in:\n",
-  normalizePath(output_folder),
-  "\n"
-)
+for (depth in names(comparisons)) {
+  for (quantity in c("prediction", "sd")) {
+    maps <- comparisons[[depth]][[quantity]]
+    limits <- if (quantity == "prediction") prediction_limits else sd_limits
+    label <- if (quantity == "prediction") "Mean" else "Pointwise SD"
+    filename <- if (quantity == "prediction") paste0("maps_", depth, ".png") else {
+      paste0("uncertainty_", depth, ".png")
+    }
+    columns <- min(panel_columns, nlyr(maps))
+    png(file.path(output_folder, filename), width = 750 * columns,
+        height = 750 * ceiling(nlyr(maps) / columns), res = 150)
+    draw_comparison(maps, depth, label, limits)
+    dev.off()
+    draw_comparison(maps, depth, label, limits)
+  }
+}
+cat("\nFigures, raster stacks, map_summary.csv and map_methods.csv:", output_folder, "\n")
 
