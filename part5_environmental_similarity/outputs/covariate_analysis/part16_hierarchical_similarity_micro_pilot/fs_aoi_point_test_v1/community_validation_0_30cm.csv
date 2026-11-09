@@ -1,0 +1,7 @@
+"target_id","plot_id","interval_code","prediction_kg_m2","observed_kg_m2","status","maximum_combined_similarity","residual_kg_m2","validation_group","top_cm","bottom_cm","mixture_p10_kg_m2","mixture_median_kg_m2","mixture_p90_kg_m2","predictive_spread_sd_kg_m2","within_source_sd_kg_m2","between_source_sd_kg_m2","n_sources","n_donors","mean_effective_donors_per_source","local_support","regional_support","broad_support","local_overlap_fraction","regional_overlap_fraction","broad_overlap_fraction","combined_support","local_exponent","regional_exponent","broad_exponent","missing_covariates","complete_interval"
+"COMMUNITY:FS-01","FS-01","0_30cm",13.1390713850253,14.26319,"OK",0.621631022041155,-1.12411861497468,"FS_ONLY",,,,,,,,,,,,,,,,,,,,,,,
+"COMMUNITY:FS-02","FS-02","0_30cm",13.7636970145981,8.38164,"OK",0.661468557689356,5.38205701459814,"FS_ONLY",,,,,,,,,,,,,,,,,,,,,,,
+"COMMUNITY:FS-03","FS-03","0_30cm",11.7525403726693,4.2223,"OK",0.603515481137907,7.53024037266934,"FS_ONLY",,,,,,,,,,,,,,,,,,,,,,,
+"COMMUNITY:FS-04","FS-04","0_30cm",11.8546159369643,8.75895,"LOW_SUPPORT",0.000823901198228857,3.09566593696433,"FS_ONLY",,,,,,,,,,,,,,,,,,,,,,,
+"COMMUNITY:FS-05","FS-05","0_30cm",11.7235493548481,6.10554,"OK",0.653737823410598,5.61800935484809,"FS_ONLY",,,,,,,,,,,,,,,,,,,,,,,
+"COMMUNITY:PM-03-A","PM-03-A","0_30cm",13.3075582913623,10.01655223,"OK",0.498193651736396,3.29100606136227,"OTHER_COMMUNITY",,,,,,,,,,,,,,,,,,,,,,,

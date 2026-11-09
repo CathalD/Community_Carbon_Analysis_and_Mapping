@@ -1,0 +1,255 @@
+**Carbon mapping: methods, packages, equations and proposed workflow**
+
+**Purpose**
+
+Compare simple spatial interpolation, pixel-wise conjugate updating and Gaussian process models. Explore whether external carbon observations can inform local predictions through environmental similarity, alongside geographical proximity.
+
+Model positive carbon stocks using natural logarithms:
+
+\[
+Y(s)=\log C(s)
+\]
+
+Keep the workshop’s Script 1 stock calculations and depth conventions unchanged. Assume measurement-error variance is zero, with an explicit setting users can adjust. Measurement error, unexplained environmental variation and uncertainty about predictions remain separate concepts.
+
+**1. Existing spatial interpolation methods**
+
+All three methods predict log-carbon using weighted observations:
+
+\[
+\widehat Y(s_0)=\sum_i w_iY(s_i)
+\]
+
+| Method | Weighting | Uncertainty interpretation |
+|---|---|---|
+| Area-based | Equal weights, \(w_i=1/n\) | Distinguish uncertainty in the area mean from variation at an unobserved location |
+| IDW | \(w_i=d_i^{-p}/\sum_jd_j^{-p}\) | Estimate prediction error using held-out whole plots |
+| Ordinary kriging | Weights derived from a fitted variogram, constrained to sum to one | Conditional kriging variance; generally excludes variogram parameter uncertainty |
+
+IDW with \(p=0\) reproduces equal weighting when all observations are included. Keep separate area-based and IDW sections for teaching.
+
+Ordinary kriging solves the constrained system:
+
+\[
+\begin{bmatrix}
+\Gamma & \mathbf1\\
+\mathbf1^\top & 0
+\end{bmatrix}
+\begin{bmatrix}
+w\\ \lambda
+\end{bmatrix}
+=
+\begin{bmatrix}
+\gamma_0\\1
+\end{bmatrix}
+\]
+
+Use [`gstat`](https://r-spatial.github.io/gstat/reference/krige.html) for IDW, variograms and kriging.
+
+For an IID constant-mean model, plug-in variance estimates illustrate the target distinction:
+
+\[
+\operatorname{Var}(\widehat\mu)\approx s_Y^2/n
+\]
+
+\[
+\operatorname{Var}(Y_{\mathrm{new}}-\widehat\mu)
+\approx s_Y^2(1+1/n)
+\]
+
+These answer different questions. Neither automatically supplies a valid likelihood variance for Bayesian fusion.
+
+**2. Back-transformation and uncertainty**
+
+If the predictive distribution is:
+
+\[
+Y(s)\mid D\sim N(m(s),v(s))
+\]
+
+then:
+
+\[
+E[C(s)\mid D]=\exp\{m(s)+v(s)/2\}
+\]
+
+\[
+\operatorname{Var}[C(s)\mid D]
+=
+\left[\exp\{v(s)\}-1\right]\exp\{2m(s)+v(s)\}
+\]
+
+The predictive median is \(\exp(m)\). The arithmetic mean includes the lognormal correction.
+
+A central 95% predictive interval is:
+
+\[
+\left[
+\exp\{m-1.96\sqrt v\},
+\exp\{m+1.96\sqrt v\}
+\right]
+\]
+
+Its interpretation depends on whether \(v\) describes the latent process or a future observation.
+
+Export log mean, log variance, original-scale mean, variance and SD. Regional-total uncertainty requires spatial covariance or joint simulations; pixel variances alone are insufficient.
+
+**3. Pixel-wise Normal–Normal conjugate updating**
+
+Let the target log-carbon quantity have prior:
+
+\[
+Y\sim N(m_0,v_0)
+\]
+
+Assume an independent, unbiased estimate satisfies:
+
+\[
+\widehat y\mid Y\sim N(Y,v_L)
+\]
+
+Then:
+
+\[
+v_{\mathrm{post}}=
+\left(v_0^{-1}+v_L^{-1}\right)^{-1}
+\]
+
+\[
+m_{\mathrm{post}}=
+v_{\mathrm{post}}
+\left(\frac{m_0}{v_0}+\frac{\widehat y}{v_L}\right)
+\]
+
+These equations are exact under the stated model. Substituting interpolation maps and their error estimates produces an approximate fusion unless their likelihood interpretation and dependence on the prior are justified.
+
+A kriging variance does not automatically make that fusion rigorous. Check shared training observations, bias, spatial support and compatible uncertainty targets.
+
+The national prior’s quantile width is not automatically a cross-validation variance. Converting quantiles to a Normal or lognormal distribution requires explicit assumptions.
+
+**4. Spatial Gaussian process conditioning**
+
+A GP models observations jointly:
+
+\[
+y=m+f+\epsilon,\qquad
+f\sim N(0,K),\qquad
+\epsilon\sim N(0,R)
+\]
+
+For prediction locations:
+
+\[
+m_*=m_{0*}+K_{*O}(K_{OO}+R)^{-1}(y_O-m_{0O})
+\]
+
+\[
+V_*=K_{**}-K_{*O}(K_{OO}+R)^{-1}K_{O*}
+\]
+
+Here \(O\) denotes observations. These distributions are conditional on specified model parameters.
+
+An exponential spatial covariance is:
+
+\[
+k(d)=\sigma_f^2\exp(-d/\ell)
+\]
+
+It is a Matérn covariance with smoothness \(\nu=0.5\). A Matérn \(\nu=1.5\) alternative is:
+
+\[
+k(d)=
+\sigma_f^2
+\left(1+\sqrt3d/\ell\right)
+\exp(-\sqrt3d/\ell)
+\]
+
+The exponential kernel is a simple baseline, not an established best choice. Compare alternatives at comparable practical correlation ranges.
+
+**5. Environmental similarity and external donor observations**
+
+Build a database linking each external core’s carbon response to environmental covariates and provenance. Extract identical predictors for local cores and prediction cells.
+
+Potential covariates include vegetation, moisture, terrain, hydrology, climate, substrate and AlphaEarth embeddings. Standardization and tuning must use training data within validation folds.
+
+A simple environmental covariance is:
+
+\[
+k_{\mathrm{env}}(i,j)
+=
+\sigma_f^2
+\exp\left[
+-\frac12\sum_p
+\left(\frac{z_{ip}-z_{jp}}{\ell_p}\right)^2
+\right]
+\]
+
+This allows geographically distant but environmentally similar locations to share information.
+
+A direct donor-weighted estimate is:
+
+\[
+\widehat Y(s)=
+\frac{\sum_iS(s,i)Y_i}{\sum_iS(s,i)}
+\]
+
+A GP instead uses the complete covariance matrix, accounting for relationships among donors. Donor spread and effective donor count are useful support diagnostics, but are not automatically prediction variance.
+
+The attached project already contains 1,564 Riley/CanPEAT external records, including 1,512 in its existing 0–30 cm training table. Earlier transfer tests show that external predictive performance does not guarantee local performance.
+
+**6. Packages explored**
+
+| Package or implementation | Role | Important distinction |
+|---|---|---|
+| `sf`, `terra` | Spatial preparation, shared grids and raster exports | Harmonize CRS, extent, resolution, origin, mask and spatial support |
+| `gstat` | IDW, variograms, kriging and simulation | IDW does not provide a model-based prediction variance equivalent to kriging |
+| `spBayes` | Hierarchical Bayesian spatial models fitted using MCMC | Propagates uncertainty in modeled parameters through posterior sampling |
+| `starve` | Spatial and temporal models using nearest-neighbour GPs and TMB | Maximum likelihood with Laplace approximation; repository archived |
+| GGPR Python notebooks | GP covariance based on predictor similarity; spatial Matérn extension | Research implementation, requiring review before uncertainty use |
+
+[`spBayes`](https://www.jstatsoft.org/article/view/v063i13) supports models such as:
+
+\[
+Y(s)=X(s)\beta+w(s)+\epsilon(s)
+\]
+
+Using a national carbon map as a covariate does not automatically propagate that map’s uncertainty. Priors on regression coefficients and uncertainty in a predictor raster are different quantities.
+
+[`starve`](https://github.com/lawlerem/starve) offers a scalable modelling approach through `strv_prepare()`, `strv_fit()`, `strv_predict()` and `strv_simulate()`. Its fitted uncertainty should not be treated as equivalent to full MCMC uncertainty.
+
+The [GGPR repository](https://github.com/Josephjiao7/Geographical-Gaussian-Process-Regression) uses predictor similarity and, in its exploratory analysis variant, a geographical Matérn component. The prediction notebook demonstrates mean predictions. Its custom kernel diagonal implementation needs correction before relying on prediction SDs.
+
+**7. Proposed external-to-local workflow**
+
+1. Fix the carbon pool, depth convention, units and prediction support.
+2. Assemble external responses, covariates and study metadata.
+3. Fit and validate a small environmental GP against simple baselines.
+4. Predict jointly at local core locations and map cells, retaining covariance.
+5. Condition on local measurements to obtain updated predictions.
+6. Back-transform, visualize and export prediction and uncertainty products.
+
+Environmental and geographical processes can be combined:
+
+\[
+Y(s)=m(x(s))+f_{\mathrm{env}}(x(s))+w_{\mathrm{space}}(s)
+\]
+
+For independent process components:
+
+\[
+K=K_{\mathrm{env}}+K_{\mathrm{space}}
+\]
+
+Validate using whole-core, study and spatial groups appropriate to the intended transfer task. Retain local observations as an independent transfer test where possible. Check interval coverage, bias and environmental applicability as well as RMSE.
+
+**8. Five additional resources**
+
+1. **[Rasmussen and Williams: Gaussian Processes for Machine Learning](https://gaussianprocess.org/gpml/)** — GP conditioning, covariance functions, parameter estimation and computational approximations.
+
+2. **[McBratney, Mendonça Santos and Minasny: On digital soil mapping](https://www.sciencedirect.com/science/article/pii/S0016706103002234)** — The SCORPAN framework for organizing soil, climate, vegetation, terrain, parent material, age and spatial predictors.
+
+3. **[Roberts et al.: Cross-validation strategies for structured data](https://doi.org/10.1111/ecog.02881)** — How dependence and the intended prediction task should influence validation design.
+
+4. **[Valavi et al.: blockCV](https://doi.org/10.1111/2041-210X.13107)** — An R approach to constructing spatially or environmentally separated validation folds. Study and repeated-core grouping still require explicit handling.
+
+5. **[Meyer and Pebesma: Predicting into unknown space?](https://doi.org/10.1111/2041-210X.13650)** — Environmental dissimilarity and the area of applicability, useful for identifying local cells poorly represented by external training observations.

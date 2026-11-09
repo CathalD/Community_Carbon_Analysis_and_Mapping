@@ -1,0 +1,15 @@
+{
+  "original": {
+    "script_2.R": "d75c301c570e294cbef54aa66d81b3c9fc2fcc83ff2b675963a3ea799ab76001",
+    "script_4.R": "bb11d40787f7b356c1cc8c627ab65a47bdd2fcf4aed05323951d7383b01c803b",
+    "script_5.R": "a96f2ead77bf14c4d2c69b2e3a204863ad2f9d781856babd4ee0efde2e3c58a5",
+    "README.md": "d8f7bf8f83a560bffe8d8cf63b12b24f1d05cc409c2cddd485dd388e489d7898"
+  },
+  "installed": {
+    "script_2.R": "a3d54166ee76a05db46773547b563d72867a740345134df6ed45db01d0f304e4",
+    "script_4.R": "9a06b89f390c46f069d17f06438dde1d586d09ed7a0069a0345ddc6f7f847f65",
+    "script_5.R": "de5f369386e23f456a8a4ec6b1fa54c0dc9d34ee470bf883ebe2e1929eace827",
+    "README.md": "6ef858a2185b7b8de9425ea63bd97a57838715febcfb447039edd785ec9ea722"
+  },
+  "note": "Targeted precision-input edits only; data and existing outputs untouched."
+}

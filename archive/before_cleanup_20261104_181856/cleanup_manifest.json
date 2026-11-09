@@ -1,0 +1,35 @@
+{
+  "original": {
+    "script_5.R": "cdfd05121c83aaae2252f3c4b2286361b05b51f770c06a3c0dedceb9010a1a9e",
+    "script_1.R": "f6cd85e47e145041963aeabc56c3392a2e57d3f060c172624da309063dd03634",
+    "Testing_Bayesian_Models.R": "a149aa1c8bafd3c72ea8029d23b37de23afb50926beb5371bf00a6fb4264f83e",
+    "script_2.R": "d88d468d8cf5ce3f42000dbc5db66983f511891ba51e1bfeea3f0eef36504b49",
+    "script_3.R": "5fae05265fd2e70c1ba118e6e7611b0346117fff64e39c3436d6c071a67f9402",
+    "script_4.R": "9cea1230547b0dd22dbef73909e42981b2b18ff4e75976807f0f10d44242880f",
+    "script_5_packages.R": "a1b2a14f9dff54d33ce7244118d8710e96b87bf44c2fd7106a33034b2bb461a1",
+    "README.md": "b7f499bf767c2a03e0628ed38c7ece856e0bab02a5f380848fb4ce3c95cb7b5a",
+    "config.R": null,
+    "helpers/grid_helper.R": null,
+    "docs/cleanup_20261104.md": null,
+    "archive/development/README.md": null,
+    "archive/development/Testing_Bayesian_Models.R": null,
+    "archive/development/script_5_packages.R": null
+  },
+  "installed": {
+    "script_5.R": "a96f2ead77bf14c4d2c69b2e3a204863ad2f9d781856babd4ee0efde2e3c58a5",
+    "script_1.R": "0c3581a4f01eff6af1674f4bc48f7f4d1a0ca96b83b12572fcc21b62dc11749d",
+    "Testing_Bayesian_Models.R": "fb67d1f9c6e4435c6aee8bb0a1e9bd0a882cb943c8fc81297c63b19f36cc6f01",
+    "script_2.R": "62afa05b63e0d6aae487942ed6d8d738fa1f711c6f25fe00557cf4fa1fb0143d",
+    "script_3.R": "7241d3264f33058a7e474f9dfb414ba237b18bdff482ecf4089d363bcacab2a7",
+    "script_4.R": "e3ce98bf6df5ea1f023db0425a952b40549c199f1bc544701110fb43a3baf116",
+    "script_5_packages.R": "f9c67cba726ca88313606ba7d9ad19bd54f10a7fe52d070df37d01986713c955",
+    "README.md": "d8f7bf8f83a560bffe8d8cf63b12b24f1d05cc409c2cddd485dd388e489d7898",
+    "config.R": "d6931ffcdbece42959b51cd5caa68b65616a86d5a49d586a070a412c1e9d41a1",
+    "helpers/grid_helper.R": "7c6ebf9b924b220370a7c4867d991a06decacb7b8941df0c86969deae400e7d2",
+    "docs/cleanup_20261104.md": "94de10ececb721526bcacc4a04942596d614c43d7aa62d39f28a70c4b363dd48",
+    "archive/development/README.md": "9c9813e225cca3386fd12ed4ee65afa607275a8a5e2807de151e4a3d2bab90ea",
+    "archive/development/Testing_Bayesian_Models.R": "a149aa1c8bafd3c72ea8029d23b37de23afb50926beb5371bf00a6fb4264f83e",
+    "archive/development/script_5_packages.R": "a1b2a14f9dff54d33ce7244118d8710e96b87bf44c2fd7106a33034b2bb461a1"
+  },
+  "note": "Code and documentation only; field data and generated outputs untouched."
+}

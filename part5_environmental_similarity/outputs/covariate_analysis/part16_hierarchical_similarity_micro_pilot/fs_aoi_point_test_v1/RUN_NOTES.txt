@@ -1,0 +1,13 @@
+Hierarchical multi-scale similarity micro-pilot
+
+Research status: exploratory; not adopted for Route L.
+Distance within each block is the mean squared donor-target difference after donor-median scaling by MAD, with donor SD fallback only when MAD is unusable.
+Distances use pairwise-complete variables and require at least ceiling(0.5 * retained variables), with an absolute minimum of one variable, in every block.
+Block similarity is exp(-0.5 * distance). Depth similarity is the product of block similarities raised to the prespecified depth exponents.
+Predictions are first calculated within each donor source and then pooled with equal source weights.
+Only explicit complete, finite, non-negative donor stocks are used at each depth unless inferred completeness was explicitly enabled.
+Reported spread is the standard deviation of the equal-source donor mixture; it is diagnostic, not a calibrated confidence or credible interval.
+Support warning threshold (maximum combined donor similarity): 0.1.
+Raster output: not requested
+Raster carbon_0_30cm, carbon_0_100cm and carbon_0_200cm are sums of interval estimates; no cumulative uncertainty layer is claimed.
+No authoritative Route L file was read, replaced, or modified.

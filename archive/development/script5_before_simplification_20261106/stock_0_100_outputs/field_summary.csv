@@ -1,0 +1,2 @@
+depth_cm,cores,plots,arithmetic_stock_mean,observed_stock_sd,mean_log_stock,observed_log_sd,area_mean_log_variance,area_new_location_log_variance
+100,6,6,36.43833333333333,19.052540425535557,3.4551271884667174,0.6145198862972261,0.06293911510912595,0.44057380576388167

@@ -1,0 +1,2 @@
+method,prediction_cells,mean_prior_stock_kg_m2,mean_updated_stock_kg_m2,working_error_sd_kg_m2,error_source,model,likelihood
+IDW,12578,18.02213260808651,29.156053382560945,9.207847194150187,"Held-out plot RMSE; IDW settings fixed, not nested validation",Approximate pointwise log-Gaussian fusion; no joint covariance,Log-unbiased error; plug-in log variance

@@ -1,0 +1,1054 @@
+Script 6: Bayesian Digital Soil Mapping & MRV Framework
+Objective
+Estimate:
+
+Current soil carbon stocks across the AOI
+Spatial uncertainty in those estimates
+Carbon stock totals for the entire AOI
+Statistical confidence in those totals
+Expected gains from additional sampling
+Monitoring readiness for future repeat measurements
+The end result becomes:
+
+"A statistically defensible estimate of carbon stock and uncertainty suitable for future monitoring, reporting and verification (MRV) applications."
+
+Phase 1: Data Assembly
+Inputs
+Field Data
+Core observations
+
+For each core:
+
+Plain Text
+
+
+Core ID
+X
+Y
+ 
+0-30 cm stock
+0-50 cm stock
+0-100 cm stock
+ 
+Bulk Density
+SOC %
+Coarse Fragments
+Depth Increment
+Environmental Covariates
+Examples:
+
+Plain Text
+
+
+Elevation
+Slope
+Aspect
+ 
+TWI
+TRI
+Curvature
+ 
+Landcover
+ 
+NDVI
+EVI
+NBR
+ 
+Sentinel bands
+ 
+Climate
+Precipitation
+Temperature
+ 
+McMaster Prior Carbon
+ 
+SoilGrids variables
+ 
+Parent Material
+Create:
+
+R
+
+
+covariate_stack
+which contains every predictor layer.
+
+Phase 2: Bayesian Model Construction
+Model Type
+For community datasets I would favour:
+
+Plain Text
+
+
+Bayesian Additive Regression Trees (BART)
+or
+
+Plain Text
+
+
+Bayesian Random Forest
+before moving to full spatial Bayesian models.
+
+Eventually:
+
+Plain Text
+
+
+brms
+INLA
+Stan
+spBayes
+could be explored.
+
+Response
+For each depth:
+
+R
+
+
+SOC_0_30
+SOC_0_50
+SOC_0_100
+fit:
+
+R
+
+
+SOC ~ covariates
+Phase 3: Validation Framework
+This is where most DSM papers stop.
+
+Following the MRV paper we need much more.
+
+A. Leave-One-Out Cross Validation
+For each sample:
+
+Plain Text
+
+
+Train on n-1 samples
+Predict removed sample
+Store residual
+Generate:
+
+R
+
+
+Observed
+Predicted
+Residual
+B. Traditional Accuracy Metrics
+Bias
+R
+
+
+ME
+Goal:
+
+Plain Text
+
+
+≈ 0
+RMSE
+R
+
+
+RMSE
+Measures map error magnitude.
+
+MAE
+R
+
+
+MAE
+Sometimes easier to explain.
+
+R²
+R
+
+
+R2
+Goal:
+
+Plain Text
+
+
+> 0
+as suggested in the MRV framework.
+
+C. Bayesian Uncertainty Validation
+Critical.
+
+Most people skip this.
+
+For each prediction:
+
+R
+
+
+posterior mean
+posterior sd
+Calculate:
+
+90% Credible Interval
+R
+
+
+lower90
+upper90
+Test:
+
+R
+
+
+Observed value inside interval?
+Calculate:
+
+R
+
+
+Coverage Rate
+Equivalent to paper's:
+
+Plain Text
+
+
+PICP
+Example
+If:
+
+Plain Text
+
+
+90% interval
+contains:
+
+Plain Text
+
+
+92% of observations
+then uncertainty is well calibrated.
+
+If:
+
+Plain Text
+
+
+65%
+then uncertainty is underestimated.
+
+This becomes one of your model acceptance criteria.
+
+Phase 4: Pixel-Level Carbon Mapping
+Produce rasters:
+
+Mean Carbon
+R
+
+
+SOC_mean
+Map showing expected carbon.
+
+Standard Deviation
+R
+
+
+SOC_sd
+Map of uncertainty.
+
+Coefficient of Variation
+R
+
+
+SOC_cv
+R
+
+
+sd / mean
+Useful for identifying:
+
+Plain Text
+
+
+Well constrained areas
+Poorly constrained areas
+Prediction Interval Width
+R
+
+
+upper95 - lower95
+Visual measure of confidence.
+
+Phase 5: AOI Scale Carbon Estimation
+This is the major MRV step.
+
+The paper argues:
+
+Pixel uncertainty is not what carbon projects need.
+
+They need:
+
+Plain Text
+
+
+AOI uncertainty
+AOI Mean Stock
+Calculate:
+
+R
+
+
+mean_stock
+AOI Total Carbon
+Calculate:
+
+R
+
+
+total_stock
+Example:
+
+Plain Text
+
+
+567,000 Mg C
+Bayesian Credible Interval
+Instead of:
+
+Plain Text
+
+
+567,000 Mg C
+report:
+
+Plain Text
+
+
+567,000 Mg C
+(95% CI:
+510,000 - 623,000)
+Much more defensible.
+
+Phase 6: Spatial Error Analysis
+Directly following Wadoux.
+
+Cross Validation Residuals
+Compute:
+
+R
+
+
+observed - predicted
+for every core.
+
+Standardized Residuals
+R
+
+
+z = residual / uncertainty
+Variogram
+Fit:
+
+R
+
+
+gstat::variogram()
+to:
+
+R
+
+
+standardized_residuals
+Estimate:
+
+Plain Text
+
+
+Nugget
+Range
+Sill
+Why?
+Because errors are spatially correlated.
+
+The paper's key insight:
+
+ignoring spatial correlation underestimates uncertainty in area totals.
+
+Phase 7: Spatial Aggregation Uncertainty
+Current workflow:
+
+Plain Text
+
+
+Average all cells
+New workflow:
+
+Plain Text
+
+
+Average all cells
++
+Account for spatial dependence
+using:
+
+Plain Text
+
+
+Monte Carlo Integration
+following Wadoux & Heuvelink 2023.
+
+Output:
+
+Plain Text
+
+
+AOI Mean Carbon
+ 
+AOI Variance
+ 
+AOI Standard Error
+ 
+AOI 95% CI
+This becomes the defensible stock estimate.
+
+Phase 8: Sampling Sufficiency Analysis
+In my opinion this is the most valuable addition.
+
+This directly answers:
+
+How much value would more samples provide?
+
+Experiment
+Current samples:
+
+Plain Text
+
+
+N = 24
+(or whatever final count)
+
+Repeatedly fit models using:
+
+Plain Text
+
+
+5 samples
+10 samples
+15 samples
+20 samples
+25 samples
+30 samples
+40 samples
+50 samples
+For each sample size:
+
+Run:
+
+Plain Text
+
+
+100 simulations
+using random subsets.
+
+For each simulation record:
+
+R
+
+
+R2
+RMSE
+Coverage
+AOI variance
+Produce:
+
+Accuracy Curve
+X-axis:
+
+Plain Text
+
+
+Sample count
+Y-axis:
+
+Plain Text
+
+
+RMSE
+Example:
+
+Plain Text
+
+
+10 cores = RMSE 9.8
+ 
+20 cores = RMSE 7.2
+ 
+30 cores = RMSE 6.1
+ 
+40 cores = RMSE 5.8
+ 
+50 cores = RMSE 5.5
+Uncertainty Curve
+X-axis:
+
+Plain Text
+
+
+Samples
+Y-axis:
+
+Plain Text
+
+
+AOI uncertainty
+Example:
+
+Plain Text
+
+
+10 cores = ±25%
+ 
+20 cores = ±16%
+ 
+30 cores = ±10%
+ 
+40 cores = ±9%
+ 
+50 cores = ±8%
+Phase 9: Marginal Benefit of Sampling
+This is the output managers actually want.
+
+Instead of:
+
+Plain Text
+
+
+RMSE decreases
+report:
+
+Plain Text
+
+
+Every additional 10 cores reduces uncertainty by:
+Additional Samples	Improvement
+10 → 20	9%
+20 → 30	6%
+30 → 40	2%
+40 → 50	1%
+Then we identify:
+
+Plain Text
+
+
+Diminishing returns threshold
+perhaps:
+
+Plain Text
+
+
+≈ 30 cores
+for that landscape.
+
+Phase 10: Adaptive Future Sampling
+Use the uncertainty map.
+
+Identify:
+
+Plain Text
+
+
+Top 10%
+Most uncertain pixels
+or:
+
+Plain Text
+
+
+Highest leverage locations
+using:
+
+Plain Text
+
+
+Conditioned Latin Hypercube
+or
+
+Plain Text
+
+
+Spatial Simulated Annealing
+sampling design.
+
+Output:
+
+Plain Text
+
+
+Recommended future sampling locations
+These become your next field campaign.
+
+Phase 11: Change Detection (Future Script 7)
+Once a second field campaign exists:
+
+Plain Text
+
+
+2026 baseline
+ 
+2031 remeasurement
+estimate:
+
+R
+
+
+ΔSOC
+for every pixel.
+
+Calculate:
+
+Plain Text
+
+
+Change Map
+Plain Text
+
+
+Change Uncertainty Map
+Plain Text
+
+
+AOI Carbon Gain
+Plain Text
+
+
+Probability Gain > 0
+Ultimate Deliverables
+For each depth interval:
+
+Maps
+Mean SOC
+SD SOC
+CV SOC
+95% Interval Width
+Sampling Priority
+Tables
+Carbon Stock Estimates
+Total Carbon
+Model Validation Metrics
+Spatial Error Statistics
+Uncertainty Summary
+Sampling Analysis
+RMSE vs Sample Size
+Uncertainty vs Sample Size
+Diminishing Returns Curves
+Recommended Additional Samples
+MRV Readiness Metrics
+Metric	Target
+Bias	~0
+RMSE	Minimized
+R²	>0
+Coverage	≥90%
+Variogram Fit	Stable
+AOI CI	Reported
+Sampling Curve	Complete
+Reproducibility	Complete
+My recommendation is that Script 6 should not end with the Bayesian prediction map. It should end with a formal "MRV Assessment Report" consisting of:
+
+Carbon stock estimate.
+Confidence interval.
+Spatial uncertainty analysis.
+Sampling sufficiency analysis.
+Predicted improvement from additional samples.
+Recommended future sampling locations.
+Readiness score for future change-detection monitoring.
+That would move your workflow from a carbon mapping exercise into something much closer to a publishable digital soil mapping and MRV framework.
+
+
+
+
+
+On thing to note how they defined quantifiable uncertianty - how did thye do this and how does it compare?
+This is actually the most important methodological distinction between what the paper did and what we are currently proposing.
+
+Most DSM studies claim they have "uncertainty" because they produce a standard deviation, confidence interval, or ensemble spread. Wadoux et al. argue that this is not sufficient for MRV.
+
+Three Levels of Uncertainty
+Think of uncertainty in three nested levels:
+
+Level 1: Point Prediction Uncertainty
+For a pixel:
+
+Plain Text
+
+
+SOC = 35 Mg C ha⁻¹
+SD = 8 Mg C ha⁻¹
+This tells you the uncertainty at that specific location.
+
+Most machine learning DSM papers stop here.
+
+Examples:
+
+Random Forest variance
+Quantile Regression Forest intervals
+Ensemble spread
+Bayesian posterior SD
+This is what your Bayesian model naturally produces.
+
+Level 2: Map-Level Uncertainty
+You predict:
+
+Plain Text
+
+
+SOC Mean Raster
+SOC SD Raster
+across the AOI.
+
+Again, many studies stop here.
+
+The hidden assumption is:
+
+Every pixel uncertainty is independent.
+
+That assumption is almost always wrong.
+
+Level 3: Spatially Aggregated Uncertainty
+This is the paper's big contribution.
+
+Suppose we have:
+
+Plain Text
+
+
+1000 cells
+each with:
+
+Plain Text
+
+
+Mean = 35
+SD = 8
+If errors were independent:
+
+R
+
+
+SE_mean = SD / sqrt(n)
+and uncertainty collapses quickly.
+
+But soil isn't independent spatially.
+
+If one ridge is overpredicted:
+
+Plain Text
+
+
+Nearby cells
+also overpredicted
+because:
+
+same covariates
+same environmental conditions
+same model behaviour
+Errors become spatially autocorrelated.
+
+The authors explicitly modelled this.
+
+How They Quantified Uncertainty
+Their procedure was:
+
+Step 1
+LOOCV Residuals
+
+For every sample:
+
+Plain Text
+
+
+Observed
+Predicted
+Residual
+Example:
+
+Plain Text
+
+
+Observed = 43
+ 
+Predicted = 39
+ 
+Residual = 4
+Step 2
+Standardized Residuals
+
+They divided:
+
+Plain Text
+
+
+Residual
+/
+Predicted SD
+giving:
+
+Plain Text
+
+
+Standardized Error
+This removed differences caused by varying local uncertainty.
+
+Step 3
+Fit a Variogram
+
+Not on carbon values.
+
+Not on predictions.
+
+But on:
+
+Plain Text
+
+
+Standardized prediction errors
+They estimated:
+
+Plain Text
+
+
+Nugget
+Sill
+Range
+This describes:
+
+How prediction errors are correlated through space.
+
+This is extremely important.
+
+Step 4
+Convert Variogram to Correlation Function
+
+They transformed:
+
+Plain Text
+
+
+γ(h)
+into
+
+Plain Text
+
+
+ρ(h)
+where:
+
+Plain Text
+
+
+ρ = spatial correlation
+between prediction errors.
+
+Step 5
+Spatially Aggregate Error
+
+Now they know:
+
+Plain Text
+
+
+Pixel uncertainty
++
+Error correlation structure
+They estimate:
+
+Plain Text
+
+
+Variance of AOI mean
+through Monte Carlo integration.
+
+This gives:
+
+Plain Text
+
+
+AOI Mean
+AOI Variance
+AOI SD
+that accounts for spatial dependence.
+
+This is their "quantifiable uncertainty."
+
+Why This Is Different From a Bayesian Posterior SD
+Suppose your Bayesian model predicts:
+
+Plain Text
+
+
+Pixel A:
+35 ± 8
+ 
+Pixel B:
+36 ± 8
+ 
+Pixel C:
+37 ± 8
+You have:
+
+Plain Text
+
+
+Posterior uncertainty
+for each location.
+
+But you still don't know:
+
+Plain Text
+
+
+Are errors correlated?
+because the Bayesian SD alone doesn't answer:
+
+Plain Text
+
+
+If A is wrong,
+is B also wrong?
+The paper specifically estimates that relationship.
+
+Comparison to Our Planned Bayesian Workflow
+Current Bayesian workflow:
+
+Outputs
+Plain Text
+
+
+Posterior Mean
+Posterior SD
+95% CI
+Probability maps
+Excellent pixel-level uncertainty.
+
+Missing
+Spatial correlation of residual errors.
+
+Without it:
+
+Plain Text
+
+
+AOI stock uncertainty
+can be too optimistic.
+
+How Strong is the Paper's Method?
+For MRV purposes:
+
+Approach	Point Uncertainty	AOI Uncertainty
+IDW	Weak	None
+Random Forest	Moderate	Weak
+Quantile RF	Good	Moderate
+Bayesian DSM	Excellent	Moderate
+Bayesian DSM + Spatial Residual Variogram	Excellent	Excellent
+This last category is where the paper sits.
+
+What I Would Do in Script 6
+I would not choose:
+
+Plain Text
+
+
+Bayesian
+OR
+Wadoux method
+I would combine them.
+
+Stage 1
+Bayesian DSM
+
+Outputs:
+
+Plain Text
+
+
+Mean
+SD
+95% CI
+for every pixel.
+
+Stage 2
+LOOCV
+
+Generate:
+
+Plain Text
+
+
+Observed
+Predicted
+Residual
+Stage 3
+Standardize residuals
+
+R
+
+
+std_resid =
+residual / posterior_sd
+Stage 4
+Fit residual variogram
+
+R
+
+
+gstat::variogram()
+Stage 5
+Estimate AOI uncertainty
+
+using the Wadoux & Heuvelink spatial aggregation framework.
+
+The Really Interesting Part for Additional Sampling
+This is where the paper becomes directly useful for your question:
+
+How much would new samples improve the map?
+
+They quantified this by repeatedly retraining models with progressively larger sample sizes.
+
+For each sample size they calculated:
+
+Plain Text
+
+
+RMSE
+Coverage
+Project-level uncertainty
+The surprising result was:
+
+Mean SOC changed very little
+Even with much fewer samples.
+
+Meaning:
+
+Plain Text
+
+
+30 Mg/ha
+31 Mg/ha
+29 Mg/ha
+all close.
+
+Uncertainty changed a lot
+Example conceptually:
+
+Samples	Mean SOC	Project SD
+10	30	5.0
+20	30	3.5
+30	30	2.7
+40	30	2.3
+50	30	2.1
+The estimate stabilizes early.
+
+The confidence improves later.
+
+This is probably exactly what you'll find with your community carbon datasets.
+
+My prediction for your workflow is that additional cores will not dramatically change the AOI-wide mean carbon stock, but they will substantially reduce uncertainty and improve the ability to detect future changes. From an MRV perspective, that reduction in uncertainty is often more valuable than a small change in the mean estimate itself.

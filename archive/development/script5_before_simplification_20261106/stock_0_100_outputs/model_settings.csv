@@ -1,0 +1,11 @@
+setting,value
+target_depth_cm,100
+range_m,2000
+observation_log_sd,0.15
+prior_uncertainty_type,pi90_width
+model,Conditional log-Gaussian spatial update
+spatial_correlation,Exponential
+spatial_support,Point predictions at grid centres
+interval_type,Pointwise latent-stock credible intervals
+parameter_treatment,Fixed assumptions; not estimated
+prior_sd_conversion,90% interval width / (2 * qnorm(0.95))

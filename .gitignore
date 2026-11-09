@@ -1,0 +1,9 @@
+.DS_Store
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+outputs/**/Rplots.pdf
+
+# Covariate raster folders are supplied locally, not stored on this branch.
+**/covariates/

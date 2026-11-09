@@ -1,0 +1,6 @@
+database_code,database,local_inputs,carbon_unit,notes
+RILEY,Riley Ontario peat dataset,RileyData_raw.csv,kg C/m2,Organic C preferred; total C fallback is flagged
+WOSIS,WoSIS 2023,WOSIS_BDOD_DATA;WOSIS_ORGC_DATA;WOSIS_TOTC_DATA,kg C/m2,"Correct g/kg conversion uses division by 100, not 10"
+CANPEAT,Canadian Peatland Database (CanPeat),CANPEAT_CORES_DATA;CANPEAT_PROFILES_DATA,kg C/m2,Measured/estimated flags retained
+JANOUSEK,Janousek global coastal wetland carbon cores,Global_Core_Locations.csv;Global_Core_Samples.csv,kg C/m2,Core ID is the location join key; source StudyID mismatches are flagged
+NPDB,Agriculture and Agri-Food Canada National Pedon Database,npdb_carbon_cores.csv;npdb_carbon_samples.csv,kg C/m2,Uses source-prepared horizon tables and retains source flags

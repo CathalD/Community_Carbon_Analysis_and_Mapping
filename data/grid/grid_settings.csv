@@ -1,0 +1,2 @@
+"crs","cell_size_m","origin_x","origin_y","mask_rule","boundary_md5"
+"EPSG:3978",1000,0,0,"Cells intersecting the AOI; clip cell areas for totals","b47824f059b9a47d9d61ff1cd03107c2"

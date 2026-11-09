@@ -1,0 +1,2 @@
+method,depth,n_cores,n_plots,power,neighbours,log_error_bias,log_error_variance,RMSE_log,scale,depth_convention
+area_based,0_50,6,6,0,Inf,-1.7578531223231644e-16,0.12833899688890538,0.3270308304641747,log C; calibration parameters treated as fixed,Script 1 stocks; completed profile at sampled maximum assumed

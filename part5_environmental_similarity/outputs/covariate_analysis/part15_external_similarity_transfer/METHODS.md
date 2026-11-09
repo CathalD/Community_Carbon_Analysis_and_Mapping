@@ -1,0 +1,9 @@
+# Riley and CanPEAT similarity transfer protocol
+
+Only complete, measured 0-30 cm carbon stocks enter the comparison. External profiles with missing five-variable or AlphaEarth covariates are excluded from every candidate so results share one analysis pool.
+External profiles at the same source/coordinate are averaged to one site before neighbour selection. All profiles from a site share one locked spatial/study fold.
+Environmental similarity is the equal mean of five Gaussian similarities on donor-site median/MAD scales. AlphaEarth uses L2-normalized 64-band vectors and chord distance. The combined rule adds their within-pool ranks equally. No local carbon outcome selects features, bandwidth, neighbour count or source mix.
+Predictions are unweighted means of the 25 or 50 most similar donor sites; controls are all-source site mean and the 25/50 geographically nearest external sites. Community comparisons are shown separately for Riley and CanPEAT and in an equal-source blend.
+Within-source external checks use the existing connected spatial/study outer folds, with every target site absent from its donor pool. Cross-source checks train on all sites of one database and test on every site of the other; no exact source-coordinate overlap was detected. The community test contains only six complete profiles, so differences are descriptive and not an independent model-selection result.
+Donor-error comparisons and Spearman associations ask whether more similar sites have more similar measured stock. No p-values are reported because site relationships, folds and six community targets are not independent replicates.
+These are fixed 0-30 cm mineral-plus-organic profile stocks. They do not validate the Route L organic contact stock or full variable-depth total. No raster or authoritative map is changed.

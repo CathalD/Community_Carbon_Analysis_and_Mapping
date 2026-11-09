@@ -1,0 +1,9 @@
+The 0-100 cm model used 6 cores from 6 plots and a 2.0 km spatial range. Mean mapped stock was 18.12 kg C/m2 (prior: 18.02 kg C/m2); held-out RMSE was 26.91 kg C/m2 and 95% predictive coverage was 33.3%.
+
+Interpretation:
+Map means cover cells with usable prior information.
+Differences from the prior describe a model update.
+They do not measure carbon accumulation over time.
+Intervals are conditional on the recorded model assumptions.
+Prior SD was approximated from a 90% prediction-interval width.
+Pointwise intervals do not establish uncertainty in AOI totals.

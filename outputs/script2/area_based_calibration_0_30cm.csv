@@ -1,0 +1,2 @@
+method,depth,n_cores,n_plots,power,neighbours,log_error_bias,log_error_variance,prediction_log_variance,variance_source,RMSE_log,scale,depth_convention
+area_based,0_30,6,6,0,Inf,-6.938893903907228e-17,0.013622671380190864,0.011036886534876892,Constant-mean normal model: residual variance plus mean-estimation variance; independent cores assumed,0.10654682609143763,log C; calibration parameters treated as fixed,Script 1 stocks; completed profile at sampled maximum assumed

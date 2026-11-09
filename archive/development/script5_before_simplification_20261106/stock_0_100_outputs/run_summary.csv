@@ -1,0 +1,2 @@
+target_depth_cm,range_m,observation_log_sd,n_cores,n_plots,n_mapped_cells,prior_mean_stock,updated_mean_stock,mean_update,heldout_RMSE,heldout_MAE,heldout_bias,coverage95_percent
+100,2000,0.15,6,6,12600,18.02121845472458,18.118031010489382,0.09681255576511197,26.91213671680152,22.868509837951926,-20.740165106763612,33.33333333333333

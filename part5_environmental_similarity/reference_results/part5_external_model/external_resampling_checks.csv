@@ -1,0 +1,6 @@
+"check","passed"
+"coordinate_one_fold",TRUE
+"study_one_fold",TRUE
+"block_one_fold",TRUE
+"validation_group_one_fold",TRUE
+"five_nonempty_folds",TRUE

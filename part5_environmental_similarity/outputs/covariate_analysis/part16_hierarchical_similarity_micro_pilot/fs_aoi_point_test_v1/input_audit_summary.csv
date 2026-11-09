@@ -1,0 +1,12 @@
+"diagnostic","value"
+"csv_shards",12
+"total_points",1572
+"donor_points",1564
+"validation_points",8
+"duplicate_core_uid",0
+"schemas_identical",1
+"response_like_fields",0
+"local_bands",31
+"regional_bands",7
+"broad_bands",5
+"qa_bands",4

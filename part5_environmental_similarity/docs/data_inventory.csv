@@ -1,0 +1,31 @@
+path,rows,columns,role
+data/derived/covariate_analysis/community_core_covariates.csv,8,156,Eight original-study cores; NOT workshop simulated cores
+data/derived/covariate_analysis/external_core_covariates_riley_canpeat.csv,1564,190,"All 1564 external donors with response, provenance, 119 predictors and QA"
+data/derived/covariate_analysis/external_training_0_30cm.csv,1512,190,Existing 1512 complete 0-30 cm external training profiles
+data/derived/external_carbon_profiles/canpeat_cores_harmonized.csv,1217,54,CanPEAT harmonized stock profiles and source metadata
+data/derived/external_carbon_profiles/canpeat_layers_harmonized.csv,37072,23,CanPEAT source layers used to integrate stocks
+data/derived/external_carbon_profiles/external_carbon_cores_all.csv,26461,56,Wider harmonized profile archive; donor runs select Riley and CanPEAT only
+data/derived/external_carbon_profiles/external_carbon_cores_canada_for_gee.csv,10610,57,Historical Canada-only point export inventory
+data/derived/external_carbon_profiles/external_carbon_source_manifest.csv,5,5,Original data or covariate export; source metadata retained
+data/derived/external_carbon_profiles/riley_cores_harmonized.csv,347,54,Riley harmonized stock profiles and source metadata
+data/derived/external_carbon_profiles/riley_layers_harmonized.csv,1584,23,Riley source layers used to integrate stocks
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_bog_batch01.csv,250,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_bog_batch02.csv,250,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_bog_batch03.csv,250,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_bog_batch04.csv,10,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_fen_batch01.csv,250,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_fen_batch02.csv,142,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_marsh_batch01.csv,1,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_other_or_unspecified_batch01.csv,40,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_CANPEAT_peatland_swamp_batch01.csv,24,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_COMMUNITY_validation_batch01.csv,8,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_RILEY_peatland_other_or_unspecified_batch01.csv,250,59,Original data or covariate export; source metadata retained
+data/external/Hierarchical_Data/HierarchicalSimilarity_DonorCovariates_RILEY_peatland_other_or_unspecified_batch02.csv,97,59,Original data or covariate export; source metadata retained
+data/external/Open_Core_Data/OGS_DATA/RileyData_raw.csv,1585,1,Original data or covariate export; source metadata retained
+data/raw/gee_imports/MultiScaleCarbonCovariates_CanadaCoreCovariatesByEcosystem_RouteL_CanadaCoreCovariates_peatland_bog_batch01.csv,500,183,Original data or covariate export; source metadata retained
+data/raw/gee_imports/MultiScaleCarbonCovariates_CanadaCoreCovariatesByEcosystem_RouteL_CanadaCoreCovariates_peatland_bog_batch02.csv,260,182,Original data or covariate export; source metadata retained
+data/raw/gee_imports/MultiScaleCarbonCovariates_CanadaCoreCovariatesByEcosystem_RouteL_CanadaCoreCovariates_peatland_fen_batch01.csv,392,182,Original data or covariate export; source metadata retained
+data/raw/gee_imports/MultiScaleCarbonCovariates_CanadaCoreCovariatesByEcosystem_RouteL_CanadaCoreCovariates_peatland_marsh_batch01.csv,1,179,Original data or covariate export; source metadata retained
+data/raw/gee_imports/MultiScaleCarbonCovariates_CanadaCoreCovariatesByEcosystem_RouteL_CanadaCoreCovariates_peatland_other_or_unspecified_batch01.csv,387,180,Original data or covariate export; source metadata retained
+data/raw/gee_imports/MultiScaleCarbonCovariates_CanadaCoreCovariatesByEcosystem_RouteL_CanadaCoreCovariates_peatland_swamp_batch01.csv,24,182,Original data or covariate export; source metadata retained
+data/raw/gee_imports/MultiScaleCarbonCovariates_CommunityCoreCovariatesAOI_RouteL_AOI_CommunityCoreCovariates.csv,8,147,Original data or covariate export; source metadata retained

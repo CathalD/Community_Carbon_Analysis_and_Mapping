@@ -1,0 +1,2 @@
+method,prediction_cells,mean_prior_stock_kg_m2,mean_updated_stock_kg_m2,working_error_sd_kg_m2,error_source,model,likelihood
+Area-based,12578,18.02213260808651,20.408268292734103,19.052540425535557,Between-core SD,Approximate pointwise log-Gaussian fusion; no joint covariance,Log-unbiased error; plug-in log variance
