@@ -82,7 +82,9 @@ make_map_record <- function(prediction, variance, method, uncertainty, scale,
     n_cores = n_cores, selected_regression = selected,
     weighting_power = NA_real_, neighbours = NA_real_,
     CV_error_log_variance = NA_real_, prediction_log_variance = NA_real_,
-    CV_RMSE_log = NA_real_, CV_RMSE_kg_C_m2 = NA_real_, AICc = NA_real_
+    CV_RMSE_log = NA_real_, CV_MAE_log = NA_real_, CV_bias_log = NA_real_,
+    matern_scale_m = NA_real_, matern_kappa = NA_real_, nugget_fraction = NA_real_,
+    CV_RMSE_kg_C_m2 = NA_real_, AICc = NA_real_
   ))
 }
 
@@ -130,8 +132,8 @@ for (depth in depth_groups) {
         "Lognormal approximation from constant-mean normal-model prediction variance:",
         "var(log stock)*(1+1/n); independent cores and fixed estimated parameters"
       ),
-      idw = "Lognormal approximation from pooled held-out plot errors; working error variance and fixed calibration",
-      ok = "Lognormal approximation from conditional kriging variance; inspect variogram warnings"
+      idw = "Lognormal approximation from pooled held-out plot log-error variance; working error spread with no bias correction",
+      ok = "Lognormal approximation from conditional Matern kriging variance; chosen covariance parameters treated as fixed"
     )
     record <- make_map_record(
       mask(prediction, analysis_mask), variance, method, uncertainty, "Natural log carbon"
@@ -141,6 +143,12 @@ for (depth in depth_groups) {
       calibration <- read_csv(calibration_file, show_col_types = FALSE)
       record$info$n_cores <- calibration$n_cores[1]
       record$info$CV_RMSE_log <- calibration$RMSE_log[1]
+      # These describe the settings actually used for the saved map.
+      if ("MAE_log" %in% names(calibration)) record$info$CV_MAE_log <- calibration$MAE_log[1]
+      if ("log_error_bias" %in% names(calibration)) record$info$CV_bias_log <- calibration$log_error_bias[1]
+      if ("matern_scale_m" %in% names(calibration)) record$info$matern_scale_m <- calibration$matern_scale_m[1]
+      if ("matern_kappa" %in% names(calibration)) record$info$matern_kappa <- calibration$matern_kappa[1]
+      if ("nugget_fraction" %in% names(calibration)) record$info$nugget_fraction <- calibration$nugget_fraction[1]
       record$info$weighting_power <- calibration$power[1]
       record$info$neighbours <- calibration$neighbours[1]
       record$info$CV_error_log_variance <- calibration$log_error_variance[1]
