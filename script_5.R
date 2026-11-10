@@ -163,7 +163,7 @@ library(fmesher)
 library(sf)
 
 # Simple assumptions for this first test.
-gp_range_m <- 20000    # Fixed Matérn range: 20 km, not estimated.
+gp_range_m <- 50000    # Fixed Matérn range: 20 km, not estimated.
 core_log_sd <- 0.001   # Nearly exact observations; numerical approximation to zero.
 
 # 1. Attach the McMaster prior to the core locations.
@@ -193,6 +193,8 @@ gp_mesh <- fm_mesh_2d(
   cutoff = 1000
 )
 
+plot(gp_mesh)
+
 # 4. Define a spatial field with fixed range and unit SD.
 # Multiplying this field by prior_s supplies McMaster's local uncertainty.
 gp_spde <- inla.spde2.pcmatern(
@@ -200,6 +202,7 @@ gp_spde <- inla.spde2.pcmatern(
   prior.range = c(gp_range_m, NA),
   prior.sigma = c(1, NA)
 )
+
 
 # Model:
 # log carbon = McMaster log mean + McMaster log SD * spatial field.
